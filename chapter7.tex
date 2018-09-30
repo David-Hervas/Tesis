@@ -9,6 +9,112 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 \section{Random synthetic data sets}
+Our implementation of the L1 penalized $N$-PLS was first tested using data simulation. In total, fourteen different scenarios with different signal-to-noise ratios were tested. Tuning of the models was performed by 20 repetitions of 10-fold cross-validation following the methodology presented in \autoref{chapter:package}. Our simulations consisted on three-way \textbf{\underline{X}} arrays with $I$=50 samples, $J$=50 variables and $K$=3 times, where variables were simulated randomly from different kinds of distributions (Poisson, Normal and Uniform) with varying parameters as follows:
+
+\begin{enumerate}
+    \item If Normal: $\mathcal{X}\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(\mu, \sigma)$\ where $\mu\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(10, 10)$\ and $\sigma\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \Gamma(5, 1)$
+    \item If Poisson: $\mathcal{X}\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{P}(\lambda)$\ where $\lambda\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(10, 2.5)$
+    \item If Uniform: $\mathcal{X}\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{U}(a, b)$\ where $a\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(10, 10)$\ and $b\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(100, 10)$
+\end{enumerate}
+
+Only 5 out of the 50 variables were used to construct the response \textbf{\underline{Y}}. They were chosen randomly from the \textbf{\underline{X}} array and assigned randomly the following coefficients: 0.4, 0.5, 0.6, 0.7 and 0.9. In the first run, only one of the three times of the third mode was involved in the creation of, in this case, vector \textbf{y}. In the second run, the three times were involved, but with different coefficients for each variable. In all simulations, random Normal and Poisson errors were added in different amounts to \textbf{y}. For each combination of type and amount of random error, simulations were repeated 100 times. Ability to select the real variables involved in y generation as well as median and 1\textsuperscript{st} and 3\textsuperscript{rd} quartiles of the mean squared error are provided for each simulation run.
+
+Results of the different simulations carried out on the synthetic datasets are provided in \autoref{table:results_synthetic}. Sparse $N$-PLS outperforms $N$-PLS regarding mean squared prediction error. When performing sparse $N$-PLS, the true variables were almost always included in the selected model. Median number of true variables selected in each model was 5 (100\%) in most of the simulations (9 out of 14). In the other 5 simulations, the median number of true variables selected was 4 (80\%). These simulations were the ones consisting in the more complex and noisy models, with the three times of the third mode affecting \textbf{\underline{Y}} and lower signal-to-noise ratios. Also, a varying amount of other noise variables were erroneously included in the models. The amount of noise variables that were included in the sparse $N$-PLS models increased as the signal-to-noise ratio of the data decreased, ranging from a median of 2 (4.4\%) to a median of 7 (15.6\%) noise variables included in the worst-case simulation.
+
+\begin{table}[h!]
+\begin{tabular}{ |c|c|c|c| } 
+\hline
+col1 & col2 & col3 \\
+\hline
+\multirow{3}{4em}{Multiple row} & cell2 & cell3 \\ 
+& cell5 & cell6 \\ 
+& cell8 & cell9 \\ 
+\hline
+\end{tabular}
+\caption{Results of the analyses performed using N-PLS and sparse N-PLS on the different simulations. Median (1\textsuperscript{st}, 3\textsuperscript{rd} quartile) of the mean squared error and a 95\% confidence interval for the difference in mean squared error between sparse $N$-PLS and $N$-PLS is also provided. True variables selected column indicates the median of the occasions these are included in the models, as well as the 1\textsuperscript{st} and 3\textsuperscript{rd} quartiles (True positives). Noise variables selected column presents analogous results for the Noise variables (False positives)}
+\label{table:results_synthetic}
+\end{table}
+
 \section{Data driven synthetic data sets}
+To further test the performance of the method in selecting highly correlated variables, simulated data resembling the ones of a  toxicogenomics data set \parencite{heijne2004bromobenzene} was analysed. In this work, the effect of the hepatotoxicant bromobenzene in rats was studied. Groups of rats were treated with different doses of this toxic compound dissolved in corn oil for a 48 hours period. At three time points from the start of the treatment, rats were sacrificed. Liver samples were used to extract mRNA for microarray profiling and blood and urine was used for metabolite profiling. Additionally, 21 physiological parameters were recorded: Glucose, A/G ratio, GSH, Body Weight, Creatin, GGT, Urea, Kidneys, Kidney/BW, Triglycerides, Liver, Albumin, Total Protein, ALP, Liver/BW, Bilirubin, LDH, Phospholipids, Cholesterol, ASAT, ALAT. 
+
+In this work, simulated profiles from 14 of these 21 physiological parameters were used to discriminate between two of the different groups (High and Low doses evolution). In order to compute these profiles, since they were not shown in \parencite{heijne2004bromobenzene}, we took advantage of those shown in \cite{conesa2010multiway}, which correspond to the same dataset. 25 samples for high doses and 25 for low doses were simulated, adding to the pattern random normal noise, with standard deviation 0.1.
+
+\autoref{figura29} represents time course levels of the seven patterns corresponding to the 14 physiological parameters evaluated for high and low dose treatment groups. 
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.7\textwidth]{figura29.png}
+\caption{Patterns for the 14 different variables in both groups: High doses (red lines) and low doses (black lines).}
+\label{figura29}
+\end{figure}
+
+These variable can be grouped attending to their common patterns in the following groups; i) ALT, AST, LDH and GSH; ii) Creatin and Albumin; iii) Kidney and Cholesterol; iv) Liver, Phospholipids and Triglycerides; v) Glucose; vi) A/G Ratio and vii) Urea.
+
+In this case, the goal was to test the ability of the sparse N-PLS model for gathering those relevant variables within the Lasso selection procedure even in the case that these variables show correlation. \autoref{table:results_synth2} summarizes the model coefficients obtained in the data set analysis.. Overall, results of the analysis showed good agreement with the structure of the data. All the variables  following the pattern i (i.e., ALT, AST, LDH and GSH) were selected by the method and similar coefficients  were assigned Additionally, Creatinine and Albumin (pattern ii) were also selected with similar coefficients. Interestingly,  the A/G ratio (pattern vi), a variable uncorrelated to all the others was also selected. However, kidney and cholesterol were not selected by the model, probably because selection was also performed on the third mode and only the third element of the third mode was selected (\autoref{table:results_synth2}).
+
+\begin{table}[!h]
+\begin{tabular}{ |c|c|c|c| } 
+ \hline
+ \  & T1 & T2 & T3 \\ 
+ Glucose & 0 & 0 & 0 \\ 
+ Phospholipids & 0 & 0 & 0 \\ 
+ Kidney & 0 & 0 & 0 \\ 
+ Cholesterol & 0 & 0 & 0 \\ 
+ Tryglycerids & 0 & 0 & 0 \\ 
+ A/G ratio & 0 & 0 & 0.077 \\ 
+ Urea & 0 & 0 & 0 \\ 
+ Creatinine & 0 & 0 & 0.082 \\ 
+ Albumin & 0 & 0 & 0.076 \\ 
+ ALT & 0 & 0 & 0.221 \\ 
+ AST & 0 & 0 & 0.221 \\ 
+ LDH & 0 & 0 & 0.221 \\ 
+ GSH & 0 & 0 & 0.101 \\ 
+ \hline
+\end{tabular}
+\caption{Coefficients of the model}
+\label{table:results_synth2}
+\end{table}
+
 \section{Real data sets}
+Liquid chromatography–mass spectrometry (LC-MS) analyses of rat serum samples were performed in an Agilent 1290 Infinity LC system coupled to an Agilent 6550 Q-TOF mass spectrometer equipped with an ESI source (Agilent Technologies, Santa Clara, CA, USA). LC-MS grade solvents (i.e. water, acetonitrile and methanol) were acquired from Fisher Scientific (Loughborough, UK). All the LC-MS additives and standards were acquired from Sigma–Aldrich/Fluka (Madrid, Spain). Metabolites were separated on an Zorbax SB-Aq column (100 x 2.1 mm; 1.8 {\textmu}m (Agilent Technologies, Santa Clara, CA, USA). Mobile phases consisted of (A) 1mM ammonium fluoride and (B) acetonitrile. The separation was conducted under the following gradient at a flow of 0.3 mL/min: 0 min 3 \% (B); 0–2 min 40 \% (B); 2-5 min 7 \% (B); 5-7 min 50 \% (B); 7-12 min 100\% (B); 12-16min 100\% (B); 16-16.5 min 3\% (B); 16.5-18 min 3\% (B). Sample and column temperatures were maintained at 4 ºC and 40ºC, respectively. The injection volume was 5 {\textmu}L. 
+The instrument was tuned in the 50-1700 m/z range using an Agilent tune mix in 2GHz extended dynamic range mode (mass resolving power 25,000 FWHM). Detection was performed in ESI (-) mode in the 50-1000 m/z range. A reference solution (m/z 119.0360 and m/z 980.0164) was used to correct small mass drifts during acquisition. The following conditions were employed: capillary voltage, 3.5 kV; nozzle voltage -1.0 kV; fragmentor voltage, 175 V; gas temperature, 200 ºC; drying gas (nitrogen), 14 L/min; nebulizer gas (nitrogen), 35 psi; sheath gas temperature, 350 ºC; and sheath gas flow (nitrogen), 11 L/min. The acquisition rate was set at 4 spectra/s in all cases. Data preprocessing was performed using ProgenesisQI software (Nonlinear Dynamics, UK).
+
+Six-week-old male Oncins France Strain A (OFA) rats (200–240 g) were purchased from Charles River (Barcelona, Spain) and acclimatized to laboratory conditions for at least 7 days. Animals were housed (12-h light-dark cycle, 21–25°C, 30–70\% humidity, woodchip bedding) and fed ad libitum with a standard chow diet (Scientific Animal Food and Engineering, Augy, France). Rats were anesthetized with sodium thiobarbital (0.1 g/kg), and blood was collected by cardiac puncture. After coagulation and centrifugation (1,000 g for 10 min at 4°C), serum samples were aliquoted and stored at - 80°C until the analysis. All the experimental protocols were approved by the Institutional Animal Ethics Committee. 40 {\textmu}L of serum sample were mixed with 120 µL of methanol. After vortexing, samples were kept at -20 ºC for 20 min. Samples were centrifuged (14000 g, 4 ºC, 15 min) and the supernatants transferred to clean tubes and evaporated to dryness. Samples were resuspended in 80 {\textmu}L of water, centrifuged (14000 g, 4 ºC, 5 min), and the clean supernatants transferred to HPLC vials for their LC-MS analysis. Rats serum samples were separated in two groups of sizes 8 and 6 and subsequently fortified with a set of metabolites to generate the patterns showed in \autoref{figura30}. Metabolites and final concentrations used are summarized in \autoref{table:metabolites}.
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.7\textwidth]{figura30.png}
+\caption{Expected patterns for the four different metabolite classes in group 1 (n=8) and group 2 (n=6).}
+\label{figura30}
+\end{figure}
+
+\begin{table}[h!]
+\begin{tabular}{ |c|c|c|c| } 
+\hline
+col1 & col2 & col3 \\
+\hline
+\multirow{3}{4em}{Multiple row} & cell2 & cell3 \\ 
+& cell5 & cell6 \\ 
+& cell8 & cell9 \\ 
+\hline
+\end{tabular}
+\caption{List of metabolites for each variable class. Metabolites are grouped attending to their physical and chemical properties. Class A, comprises fatty acid; Class B, comprises bile acids; Class C, comprises amino acids; Class D comprises miscellaneous compounds}
+\label{table:metabolites}
+\end{table}
+
+Simulated data sets provide a useful suitable first approach to test the performance of the new sNPLS method. However, to exemplify sNPLS its utility in a more complex context, the proposed method was faced to the analysis a real a real dataset, which was derived from a metabolomics study. In the metabolomics data sets usually hundreds of variables, with high noise and high correlation are obtained, which dramatically hinders biomarker discovery and variable selection for predictive models building.  Thus, real processed rat serum samples were used to artificially generate two different groups by adding a set of standards at different final concentrations that additionally  showed different trends along time (\autoref{figura30}).  In our opinion, this experimental design provides a suitable frame work to assess sNPLS capabilities when facing real -omics data sets.
+Our cross-validation procedure (20 repetitions of 5-fold cross-validation) selected as the optimum parameter values 30 features of \textbf{W}\textsuperscript{J}, 3 features of \textbf{W}\textsuperscript{K} and 2 components. Therefore, 60 variables among the initial 1220 obtained from the LC-MS analysis (30 in each component) were selected by our final sparse $N$-PLS model. Out of the four variable classes which were different between both groups by design (\autoref{table:metabolites}), our model included at least one representative variable for each class. The model also included other variables not present among the four controlled variable classes, but many of them showed similar patterns to those included and could be derivatives or adducts of the original metabolites. Overall, the selection provided by the new model showed a quite feasible result, where not only the real assignable variables (added metabolites) but also those interfering ones can be selected. A list of all the selected variables is presented in \autoref{table:results_real}. The first column list those variables selected by sparse $N$-PLS, while  the second column indicates on which component these variables were selected. The third column shows wether these variables belong or not to one of the classes described in \autoref{table:metabolites}. Finally, column four shows whether those variables that do not belong to any of the assayed classes follows or not a pattern similar to those variables included (Table 1). Interestingly, variables of the classes 1, 2 and 3 and its derivatives or analogues were all exclusively selected in the first component and variables of the class 4 and its derivatives or analogues were all exclusively selected in the second component. Variables with different patterns to those of the four experimentally generated classes were included in both components, but were more prominent in the second one (13 in the first component versus 20 in the second). 
+
+Finally, the performance of our model was compared with the standard $N$-PLS model. To this end, the metabolomics data set was analysis using both approaches. The sNPLS model clearly discriminated between the two rat groups (\autoref{figura31}A). However, similar groups’ separation was also obtained by suing the standard $N$-PLS (\autoref{figura31}B). The differences between both models appear when comparing \autoref{figura31}B vs \autoref{figura31}G, and \autoref{figura31}C vs \autoref{figura31}H, related to \textbf{W}\textsuperscript{J} and \textbf{W}\textsuperscript{K}, respectively; or \autoref{figura31}D vs \autoref{figura31}I, and \autoref{figura31}E vs \autoref{figura31}J respectively, which are alternative representations. For interpretation purposes, it seems better to compare \autoref{figura31}B vs \autoref{figura31}G for \textbf{W}\textsuperscript{J}, and \autoref{figura31}E vs \autoref{figura31}J for \textbf{W}\textsuperscript{K}. For \textbf{W}\textsuperscript{J}, it seems quite clear that the selection made from sparse $N$-PLS allows a clear interpretation of the metabolites responsible for the separation between the two groups. In the first component, are represented those metabolites belonging to the classes 1, 2 and 3. While, the second component is related to completely independent metabolites (with respect to component one), which could be related to the separation of rats 6 and 13. Many of these metabolites are from class 4, although some of them are not apparently related to any of the designed variable groups.
+These interpretations are much more hard to do when using standard $N$-PLS due to the high number of variables to deal with in the second (metabolites) mode, so from this perspective the proposed approach seems to improve the standard $N$-PLS model when trying to directly select the variables of interest (metabolites in this case). However, it should be highlighted that variable selection is out of the $N$-PLS scope. These results shows that when variable selection is of prior relevance for interpretation or validation purposes sparse $N$-PLS come up as a valid alternative
+For the interpretation of \textbf{W}\textsuperscript{K}, \autoref{figura31}E and \autoref{figura31}J have been selected. These plots show,  for the first component, a similar pattern, although a slight shift downwards is observed for the standard $N$-PLS. The similar trend observed for both methods strengths the use of the sparse $N$-PLS results, as it provides extra information as discussed above. However, regarding the second component, they do not provided the same result, which could be related to the clear separation of rats 6 and 13 observed in sparse $N$-PLS (\autoref{figura31}A).
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.95\textwidth]{figura31.png}
+\caption{Plots of the sparse $N$-PLS model (left) and the standard $N$-PLS model (right). Score plots of the two first components in the \textbf{T} matrix (A, F); weighting plots of the \textbf{W}\textsuperscript{J} matrix (B, G); weighting plot of the \textbf{W}\textsuperscript{K} matrix (C, H); plots of the loadings of the second (D, I) and third (E, J) modes.}
+\label{figura31}
+\end{figure}
+
 \section{Comparison with other methods}
