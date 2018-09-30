@@ -1,0 +1,53 @@
+% ---------------------------------------------------------------------
+% ---------------------------------------------------------------------
+% ---------------------------------------------------------------------
+
+\chapter[Sparse N-PLS, a method for variable selection in multiway data sets]{Sparse N-PLS, a method for variable selection in multiway data sets}
+
+
+
+% ---------------------------------------------------------------------
+% ---------------------------------------------------------------------
+\section{Variable selection through L1 penalization}
+As explained in \autoref{lasso}, L1-penalization forces the coefficients of a model to shrink to zero effectively performing variable selection. The original lasso for least squares is as follows:
+
+\begin{equation}
+2*x
+\end{equation}
+
+\section{Sparse N-PLS, integration of L1 penalization in the N-PLS algorithm}
+\label{NPLSpenalization}
+As commented above, we propose to introduce the L1-penalization in the N-PLS algorithm. To this aim, we used a similar approach to that of \cite{le2008sparse}. Briefly, to achieve sparse versions of $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ for each latent variable, we introduce the soft-thresholding penalty function $\beta_j^{lasso}=sgn(\beta_j^{LS})(|\beta_j^{LS}|-\lambda)^+$  defined in equation (6) in the N-PLS algorithm right after the SVD at the $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ determination. The complete algorithm is as follows:
+
+
+\vspace{20pt}
+Center X and Y, and unfold X (and Y when necessary) into a two-way matrix.
+
+Let u be some column of Y, and set  f=1
+
+\begin{enumerate}
+    \item wT=uTX/uTu
+    \item Build Z by refolding w according to the modes dimensions
+    \item Determine wJ y wK by SVD
+    \item L1-penalization inclusion
+    \begin{enumerate}
+        \item Apply soft-thresholding on wJ
+        \item Apply soft-thresholding on wK
+        \item Input the new w as kronecker(wK, wJ)
+    \end{enumerate}
+    \item t=Xw/wTw
+    \item q=YTt/norm(YTt)
+    \item u=Yq
+    \item Check for convergence. If it is achieved, continue; otherwise, go to 1
+    \item b = (TTT)-1TTu; where T=[t1 t2… tf]
+    \item X = X-twT and Y = Y-tbqT
+    \item f = f+1. Continue from step 1 until a good description of Y
+\end{enumerate}
+\vspace{20pt}
+
+In this work, we performed both the standard regression (continuous response) and the discriminant version of the N-PLS model, i.e. N-PLS-DA. In the case of N-PLS-DA, Y is a y vector formed by ones and zeros, each of the two values related to one of the two classes to be segregated. 
+
+
+
+\section{Parameters of the sparse N-PLS algorithm}
+\subsection{Tuning of the parameters}
