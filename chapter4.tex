@@ -133,3 +133,100 @@ Finally, from the scores \textbf{T} and \textbf{U}, as well from the \textbf{W} 
 \end{equation}
 
 In summary, $N$-PLS allows for the application of the well known standard PLS model to multi-way arrays, being able to exploit the multidimensional structure of the data, reducing the inclusion of noise, and producing more parsimonious models than standard PLS models applied to unfolded matrices. 
+
+\subsection{Variable selection methods for $N$-PLS models}
+As explained in the previous section, although $N$-PLS does not provide variable selection at the model-fitting step, some methods have been developed to implement variable selection on the fitted model. In this section the VIP scores and Selectivity Ratio methods will be presented and explained.
+
+\subsubsection{VIP scores}
+The VIP scores method is a ranking method for variable selection that was first developed for standard PLS regression models in two-way data matrices \parencite{wold2001pls, chong2005performance}. For this two-way case, the variable importance in the projection is a measure of the influence of each of the variables in the data matrix \textbf{X} on the response matrix \textbf{Y} (\autoref{equation20})
+
+\begin{equation}
+VIP^2_j=S_fw^2_{jf} \cdot SSY_f \cdot J/(SSY_{tot.expl.} \cdot F)
+\label{equation20}
+\end{equation}
+
+where $J$ is the number of variables in \textbf{X} and $F$ is the number of latent variables in the model. 
+
+When the response is a vector \textbf{y} it holds that
+
+\begin{equation}
+SSY_f=b^2_{ff}\textbf{\text{t}}_f^T\textbf{\text{t}}_f
+\label{equation21}
+\end{equation}
+
+and
+
+\begin{equation}
+SSY_{tot.expl.}=\textbf{\text{b}}^2\textbf{\text{T}}^T\textbf{\text{T}}
+\label{equation22}
+\end{equation}
+
+where \textbf{T} is the score matrix and \textbf{b} are the PLS coefficients. Following this, VIP values for each variable can be computed using the PLS weight $w_{jf}$ based on how much of \textbf{y} is explained in each latent variable. It is considered that VIP values greater than one have an above average influence and should be considered as relevant variables in explaining \textbf{Y}.
+
+In their work, \textcite{favilla2013assessing}, expanded the applicability of the VIP scores to the three-way case as follows:
+
+In the case of a two-dimensional \textbf{Y}, the relation presented on \autoref{equation20} applies to each mode of a three-way \textbf{\underline{X}} array:
+
+\begin{equation}
+VIP^2_j=\Sigma_fw^2_{jf} \cdot SSY_{mf} \cdot J/(SSY_{tot.expl.,m} \cdot F)
+\label{equation23}
+\end{equation}
+
+and
+
+\begin{equation}
+VIP^2_k=\Sigma_fw^2_{kf} \cdot SSY_{mf} \cdot K/(SSY_{tot.expl.,m} \cdot F)
+\label{equation24}
+\end{equation}
+
+where $J$ is the number of variables in the second mode of \textbf{\underline{X}} and $K$ is the number of elements of the third mode in \textbf{\underline{X}}.
+
+For each latent variable $f$ it holds that
+
+\begin{equation}
+SSY_{tot.expl.,m}=\Sigma_i(\textbf{\text{T}}_{(I \times F)}\textbf{\text{B}}_{(F \times F)}\textbf{\text{q}}^T_{(m, F)})^2
+\label{equation25}
+\end{equation}
+
+and for each y-variable $y_m$:
+
+\begin{equation}
+SSY_{mf}=\Sigma_i(\textbf{\text{t}}_fb_{ff}q_{mf})^2
+\label{equation26}
+\end{equation}
+
+where $I$ is the number of samples, \textbf{T} is the first mode score matrix, \textbf{B} the inner relation coefficients matrix and \textbf{Q} the loadings matrix of \textbf{Y}.
+
+For any model dimension $f$ and variable $j$ the corresponding VIP value is estimated by the squared weight, $w_{jf}^2$, of that parameter multiplied by the percent of \textbf{Y} explained by that dimension. Then, importance values are normalized constraining the $VIP^2$ value to equal the number of variables.
+
+Taking \autoref{equation25} and \autoref{equation26} When considering all \textbf{Y} variables together, it holds that
+
+\begin{equation}
+SSY_{tot.expl.}=\Sigma_i(\textbf{\text{T}}_{(I \times F)}\textbf{\text{B}}_{(F \times F)}\textbf{\text{Q}}^T_{(M, F)})^2
+\label{equation27}
+\end{equation}
+
+\begin{equation}
+SSY_{f}=\Sigma_m\Sigma_i(\textbf{\text{t}}_fb_{ff}\textbf{\text{q}}^T_{mf})^2
+\label{equation28}
+\end{equation}
+
+and
+
+\begin{equation}
+VIP^2_j=\Sigma_fw^2_{jf} \cdot SSY_{f} \cdot J/(SSY_{tot.expl.} \cdot F)
+\label{equation29}
+\end{equation}
+
+From this, extension to other \textbf{\underline{Y}} modes can be easily obtained.
+
+An example of the VIP score computation results on a PLS analysis is provided in \autoref{figura41}, where the first eleven vaiables and the 28th variable have a VIP score greater than one and are considered as relevant for predicting \textbf{y}.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.65\textwidth]{figura41.pdf}
+\caption{Plot of the VIP scores from the different variables in a PLS model. The dashed red line marks the VIP=1 threshold.}
+\label{figura41}
+\end{figure}
+
+\subsubsection{Selectivity Ratio}
