@@ -13,18 +13,96 @@ In most fields, data sets are usually represented by two dimensional matrices, w
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=0.65\textwidth]{figura27.png}
+\includegraphics[width=0.60\textwidth]{figura27.png}
 \caption{Representation of a three-way array.}
 \label{figura27}
 \end{figure}
 
-\section{Exploration of N-way arrays}
-\subsection{Tucker3}
-When studying multi-way structures, the most general model that can be used is the Tucker3 model \parencite{tucker1966some}, also explained in detail by \cite{kiers2001three}.
+\section{Exploration and description of N-way arrays}
+\subsection{Unfolding}
+One of the straightforward solutions for dealing with $N$-way arrays is performing an unfolding of the array into a two-dimensional matrix. This unfolding is performed by regrouping the elements of the higher order modes by extending the dimension of the second mode, as showed in \autoref{figura35}. After the unfolding, all statistical methods valid for two-dimensional matrices are applicable to the new structure, although the tridimensional structure of the data is lost, so there is a potential loss of information.
 
-\section{Regression methods for N-way arrays, N-PLS}
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.95\textwidth]{figura35.png}
+\caption{Unfolding of a three-way array ($I \times J \times K$) into a two-dimensional matrix ($I \times JK$).}
+\label{figura35}
+\end{figure}
+
+
+\subsection{Tucker3}
+When studying multi-way structures, the most general model that can be used is the Tucker3 model \parencite{tucker1966some}, also explained in detail by \textcite{kiers2001three}.
+
+Assuming a three-way structure of the data, the Tucker3 model has the structure defined in \autoref{figura34}. This figure shows that the model is a weighted sum of all possible outer products, where the weights of the outer product between the $i$th factor from \textbf{A}, the $j$th factor from \textbf{B} and the $k$th factor from \textbf{C} is determined by element $g_{ijk}$ of the core. 
+
+Model parameters are estimated by minimizing the squared sum of residuals $e_{lmn}$ as shown in \autoref{equation17}
+
+\begin{equation}
+x_{ijk}=\sum\limits_{l=1}^{w_1} \sum\limits_{m=1}^{w_2} \sum\limits_{n=1}^{w_3}a_{il}b_{jm}c_{kn}+e_{lmn}
+\label{equation17}
+\end{equation}
+
+If the Kronecker product is used, defined as $\otimes$, unfolding the \textbf{\underline{X}} array, the \textbf{\underline{G}} core and the residuals \textbf{\underline{E}} into matrices \textbf{X}, \textbf{G} and \textbf{E} by fixing the first mode, athe matrix expression of the model is as follows (\autoref{equation18}):
+
+\begin{equation}
+\textbf{\text{X}}=\textbf{\text{AG}}(\textbf{\text{C}}^T\otimes \textbf{\text{B}}^T)+\textbf{\text{E}}
+\label{equation18}
+\end{equation}
+
+where \textbf{A} is the loadings matrix corresponding to the first mode, \textbf{G} is the matrix obtained after unfolding the \textbf{\underline{G}} core fixing the first mode, \textbf{B} and \textbf{C} are the loading matrices of the second and third mode respectively and \textbf{E} is the residuals matrix. The fact that the number of components is not forced to be the same in the different modes allows for the different loadings matrices to have different dimensions for each mode.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.85\textwidth]{figura34.png}
+\caption{Scheme of the Tucker3 model. The model consists on a weighted sum of outer products between the different factors stored in matrices \textbf{A}, \textbf{B} and \textbf{C}.}
+\label{figura34}
+\end{figure}
+
+Of note, the compression performed by the model can be applied also to the first mode. This way, the \textbf{\underline{G}} core can be considered as an approximation to \textbf{\underline{X}}, which approximates the original array by the three matrices \textbf{A}, \textbf{B} and \textbf{C}.
+
+It is important to take into account that the model has not a unique solution, because it has rotational freedom. In fact, the model can be so redundant that many elements of \textbf{\underline{G}} can be set to zero without altering the fit of the model, thus meaning they are associated to noise.
+
+\subsection{PARAFAC}
+The PARAFAC method is also a decomposition method for multi-way arrays. It can be derived from the Tucker 3 model by imposing superdiagonallity and identity in the structure of the \textbf{\underline{G}} core. Essentially, it is a generalization of PCA to three- or multi-way data structures \parencite{bro1997parafac}. The method was first developed by \textcite{harshman1970foundations} and \textcite{carroll1970analysis}, who named the method as CANDECOMP. In this method, the decomposition of the data is made into trilinear components, with each component consisting of one score vector and two loading vectors. The general structure of the PARAFAC model is presented in \autoref{figura36}.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.85\textwidth]{figura36.png}
+\caption{General structure of a PARAFAC model.}
+\label{figura36}
+\end{figure}
+
+A PARAFAC model of a three-way array is given by three loading matrices, \textbf{A}, \textbf{B} and \textbf{C} with elements $a_{if}$, $b_{if}$ and $c_{kf}$. The model minimizes the sum of squares of residuals in \autoref{equation16}.
+
+\begin{equation}
+x_{ijk}=\sum\limits_{f=1}^F a_{ij}b_{jf}c_{kf}+e_{ijk}
+\label{equation16}
+\end{equation}
+
+The matricial expression of the PARAFAC model can be obtained by Using the Khatri-Rao product \parencite{liu2008hadamard} and by unfolding the \textbf{\underline{X}} array into matrix \textbf{X} (\autoref{equation19}).
+
+\begin{equation}
+\textbf{\text{X}}=\textbf{\text{A}}(\textbf{\text{C}}|\otimes|\textbf{\text{B}})^T + \textbf{\text{E}} = \sum\limits_{f=1}^F a_f(c^T_f\otimes b^T_f)+\textbf{\text{E}}
+\label{equation19}
+\end{equation}
+
+In the PARAFAC model, $a_f$, $b_f$ and $c_f$ are the $f$th columns of the loading matrices \textbf{A}, \textbf{B} and \textbf{C}, respectively.
+
+The main advantage of PARAFAC over Tucker3 models is the impossibility of alternative solutions, that is, there is no posibility of rotation. This makes PARAFAC models more easily interpretable.
+
+\section{Regression methods for \textit{N}-way arrays, \textit{N}-PLS}
 \label{NPLSregression}
-N-PLS studies relationships between some three-way (or N-way) \textbf{\underline{X}} (e.g. I x J x K) data structure and any \textbf{\underline{Y}} (e.g. I x L x M) data structure. It is the natural extension of PLS to \textit{N}-way structures, which tries to maximize the covariance between \textbf{\underline{X}} and \textbf{\underline{Y}} data arrays. Considering \textbf{X} (IxJK) the unfolded version of \textbf{\underline{X}}, \textit{N}-PLS tries to find latent spaces $\textbf{\text{W}}^{J}$ and $\textbf{\text{W}}^{K}$ that maximize the covariance between \textbf{X} and \textbf{Y}, so it can be expressed as:
+The $N$-PLS model is an extension of the standard PLS model to multi-way arrays based in the decomposition performed by the PARAFAC model. It's aim is studying relationships between some three-way (or N-way) \textbf{\underline{X}} (e.g. I x J x K) data structure and any \textbf{\underline{Y}} (e.g. I x L x M) data structure by maximizing the covariance between \textbf{\underline{X}} and \textbf{\underline{Y}} data arrays. For achieving this, a multilinear model is fitted simultaneously to the \textbf{\underline{X}} and the \textbf{\underline{Y}} arrays with a regression model relating the two together. The structure of the $N$-PLS model is presented in \autoref{figura38}.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.85\textwidth]{figura38.png}
+\caption{General structure of a $N$-PLS model.}
+\label{figura38}
+\end{figure}
+
+
+Considering \textbf{X} (IxJK) the unfolded version of \textbf{\underline{X}}, \textit{N}-PLS tries to find latent spaces $\textbf{\text{W}}^{J}$ and $\textbf{\text{W}}^{K}$ that maximize the covariance between \textbf{X} and \textbf{Y}, so it can be expressed as:
 
 \begin{equation}
 \textbf{\text{X}}=\textbf{\text{T}}(\textbf{\text{W}}^{K}|\otimes{}|\textbf{\text{W}}^{J})^{T}+\textbf{\text{R}}
@@ -54,3 +132,4 @@ Finally, from the scores \textbf{T} and \textbf{U}, as well from the \textbf{W} 
 \label{equation04}
 \end{equation}
 
+In summary, $N$-PLS allows for the application of the well known standard PLS model to multi-way arrays, being able to exploit the multidimensional structure of the data, reducing the inclusion of noise, and producing more parsimonious models than standard PLS models applied to unfolded matrices. 

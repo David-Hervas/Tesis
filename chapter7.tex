@@ -11,6 +11,7 @@
 \section{Random synthetic data sets}
 Our implementation of the L1 penalized $N$-PLS was first tested using data simulation. In total, fourteen different scenarios with different signal-to-noise ratios were tested. Tuning of the models was performed by 20 repetitions of 10-fold cross-validation following the methodology presented in \autoref{chapter:package}. Our simulations consisted on three-way \textbf{\underline{X}} arrays with $I$=50 samples, $J$=50 variables and $K$=3 times, where variables were simulated randomly from different kinds of distributions (Poisson, Normal and Uniform) with varying parameters as follows:
 
+\vspace{15pt}
 \begin{enumerate}
     \item If Normal: $\mathcal{X}\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(\mu, \sigma)$\ where $\mu\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(10, 10)$\ and $\sigma\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \Gamma(5, 1)$
     \item If Poisson: $\mathcal{X}\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{P}(\lambda)$\ where $\lambda\ {\raise.17ex\hbox{$\scriptstyle\sim$}}\ \mathcal{N}(10, 2.5)$
@@ -118,3 +119,4 @@ For the interpretation of \textbf{W}\textsuperscript{K}, \autoref{figura31}E and
 \end{figure}
 
 \section{Comparison with other methods}
+

@@ -9,7 +9,7 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 \section{R programming language}
-R is a programming language designed for statistical programming, derived from the S language, which was developed in the Bell Laboratories by Rick Becker, John Chambers and Allan Wilks in the 60s. It is free software and open source, and was designed specifically for performing data analysis and statistical tasks. Since it is open source, R has thousands of developers, which results in more than 10000 packages in the main software repository for R named CRAN (\autoref{figura13}). For this reasons, R has become a standard for data analysis in many scientific fields such as physics, biology and medicine among others. 
+R \parencite{ihaka1996r, rsoftware} is a programming language designed for statistical programming, derived from the S language, which was developed in the Bell Laboratories by Rick Becker, John Chambers and Allan Wilks in the 60s. It is free software and open source, and was designed specifically for performing data analysis and statistical tasks. Since it is open source, R has thousands of developers, which results in more than 10000 packages in the main software repository for R named \textit{CRAN} (\autoref{figura13}) and more than 1300 packages in the \textit{Bioconductor} repository, speciallized in packages for the analysis of omic data. For this reasons, R has become a standard for data analysis in many scientific fields such as physics, biology and medicine among others \parencite{goztepe4facto}. 
 
 \begin{figure}[hbtp]
 	\centering
@@ -18,69 +18,103 @@ R is a programming language designed for statistical programming, derived from t
 \label{figura13}
 \end{figure}
 
-With the huge number of packages at the disposal of R users, many advanced functions have already been programmed and are available for they use or reuse when programming new functionalities. Apart from the main repository (CRAN) there are other important repositories with thousands of packages more such as R-Forge, Bioconductor or even Github. All this functionallity and the fact that R is open source motivated the election of R as the language for developing all the techniques and tools presented in this thesis.
+With the huge number of packages at the disposal of R users, many advanced functions have already been programmed and are available for they use or reuse when programming new functionalities. Apart from the main repository (CRAN) there are other important repositories with thousands of packages more such as \textit{R-Forge}, \textit{Bioconductor} or even \textit{Github}. All this functionallity and the fact that R is open source motivated the election of R as the language for developing all the techniques and tools presented in this thesis.
 
 
 \section{Implementation of the sNPLS algorithm in R}
-In this section the three key functions of the code for the \textit{sNPLS} package will be exposed and commented. These include the main sNPLS function, the R-matrix function and the cross-validation function. The full code for the package will be included in the appendix.
+In this section the key functions of the code for the \textit{sNPLS} package will be exposed and commented. These include the main sNPLS function, the R-matrix function and the cross-validation functions. The full code for the package will be included in the appendix.
 
 \subsection{Main algorithm}
 This is the code of the main function of the package. It performs $N$-PLS regression as explained in \autoref{NPLSregression} and includes an L1-penalization step at the determination of $\textbf{\text{w}}^{J}$ and $\textbf{\text{w}}^{K}$ as explained in \autoref{NPLSpenalization}.
+\vspace{15pt}
 \begin{scriptsize}
-\begin{verbatim}
+\begin{lstlisting}[language=Python, caption=sNPLS main function]
 sNPLS <- function(XN, Y, ncomp = 2, conver = 1e-16, max.iteration = 10000,
-                  keepJ = rep(ncol(XN), ncomp), keepK = rep(rev(dim(XN))[1], ncomp),
-                  scale.X=TRUE, center.X=TRUE, scale.Y=TRUE, center.Y=TRUE, silent = F) {
-    # Matrices initialization
-    Tm <- U <- Q <- WsupraJ <- WsupraK <- X <- P <- NULL
-    Yorig <- Y
-    Y <- scale(Y, center = center.Y, scale = scale.Y)
-    y_center <- attr(Y, "scaled:center")
-    y_scale <- attr(Y, "scaled:scale")
-    B <- matrix(0, ncol = ncomp, nrow = ncomp)
-    Gu <- vector("list", ncomp)
-    S <- svd(Y)$d
-    u <- Y[, S == max(S)]  #Column with the highest variance
-    # Unfolding of XN en 2-D
-    X <- unfold3w(XN)
-    #Check for zero variance columns and fix them with some noise
-    if(any(apply(X, 2, sd)==0)){
-      X[,apply(X, 2, sd)==0] <- apply(X[,apply(X, 2, sd)==0, drop=FALSE], 2, function(x) jitter(x))
+                  keepJ = rep(ncol(XN), ncomp), 
+                  keepK = rep(rev(dim(XN))[1], ncomp),
+                  scale.X=TRUE, center.X=TRUE, scale.Y=TRUE, center.Y=TRUE, 
+                  silent = F) {
+  
+  mynorm <- function(x) sqrt(sum(diag(crossprod(x))))
+  if (length(dim(Y)) == 3) Y <- unfold3w(Y)
+  if (length(dim(XN)) != 3)
+    stop("'XN' is not a three-way array")
+  if (!is.null(rownames(XN)))
+    y.names <- x.names <- rownames(XN) else {
+    y.names <- x.names <- 1:dim(XN)[1]
     }
-    # Center and scale
-    Xd <- scale(X, center = center.X, scale = scale.X)
-    x_center <- attr(Xd, "scaled:center")
-    x_scale <- attr(Xd, "scaled:scale")
-
-    # Main loop for each component
-    for (f in 1:ncomp) {
-        nj <- ncol(XN) - keepJ[f]
-        nk <- dim(XN)[3] - keepK[f]
-        it = 1
-        while (it < max.iteration) {
-            Zrow <- crossprod(u, Xd)
-            Z <- matrix(Zrow, nrow = dim(XN)[2], ncol = dim(XN)[3])
-            svd.z <- svd(Z)
-            wsupraj <- svd.z$u[, 1]
-            # L1 penalization for wsupraj
-            if (nj != 0) {
-                wsupraj <- ifelse(abs(wsupraj) > abs(wsupraj[order(abs(wsupraj))][nj]),
-                                  (abs(wsupraj) - abs(wsupraj[order(abs(wsupraj))][nj])) *
-                                    sign(wsupraj), 0)
-            }
-            ##########
-            wsuprak <- svd.z$v[, 1]
-            # L1 penalization for wsuprak
-            if (nk != 0) {
-                wsuprak <- ifelse(abs(wsuprak) > abs(wsuprak[order(abs(wsuprak))][nk]),
-                                  (abs(wsuprak) - abs(wsuprak[order(abs(wsuprak))][nk])) *
-                                    sign(wsuprak), 0)
-            }
-            ##########
-            tf <- Xd %*% kronecker(wsuprak, wsupraj)
-            qf <- crossprod(Y, tf)/mynorm(crossprod(Y, tf))
-            uf <- Y %*% qf
-            if (sum((uf - u)^2) < conver) {
+    if (!is.null(colnames(XN)))
+      var.names <- colnames(XN) else {
+      var.names <- paste("X.", 1:dim(XN)[2], sep = "")
+      }
+      if (!is.null(dimnames(XN)[[3]]))
+        x3d.names <- dimnames(XN)[[3]] else {
+        x3d.names <- paste("Z.", 1:dim(XN)[3], sep = "")
+        }
+        if (!is.null(colnames(Y)))
+          yvar.names <- colnames(Y) else {
+          yvar.names <- paste("Y.", 1:dim(Y)[2], sep = "")
+          }
+          if(!center.X) center.X <- rep(0, ncol(XN)*dim(XN)[3])
+          if(!center.Y) center.Y <- rep(0, ncol(Y))
+          if(!scale.X) scale.X <- rep(1, ncol(XN)*dim(XN)[3])
+          if(!scale.Y) scale.Y <- rep(1, ncol(Y))
+          
+          # Matrices initialization
+          Tm <- U <- Q <- WsupraJ <- WsupraK <- X <- P <- NULL
+          Yorig <- Y
+          Y <- scale(Y, center = center.Y, scale = scale.Y)
+          y_center <- attr(Y, "scaled:center")
+          y_scale <- attr(Y, "scaled:scale")
+          B <- matrix(0, ncol = ncomp, nrow = ncomp)
+          Gu <- vector("list", ncomp)
+          S <- svd(Y)$d
+          u <- Y[, S == max(S)]  #Column with the highest variance
+          # Unfolding of XN en 2-D
+          X <- unfold3w(XN)
+          #Check for zero variance columns and fix them with some noise
+          if(any(apply(X, 2, sd)==0)){
+            X[,apply(X, 2, sd)==0] <- apply(X[,apply(X, 2, sd)==0, drop=F], 
+                                            2, function(x) jitter(x))
+          }
+          # Center and scale
+          Xd <- scale(X, center = center.X, scale = scale.X)
+          x_center <- attr(Xd, "scaled:center")
+          x_scale <- attr(Xd, "scaled:scale")
+          
+          # Main loop for each component
+          for (f in 1:ncomp) {
+            nj <- ncol(XN) - keepJ[f]
+            nk <- dim(XN)[3] - keepK[f]
+            it = 1
+            while (it < max.iteration) {
+              Zrow <- crossprod(u, Xd)
+              Z <- matrix(Zrow, nrow = dim(XN)[2], ncol = dim(XN)[3])
+              svd.z <- svd(Z)
+              wsupraj <- svd.z$u[, 1]
+              # L1 penalization for wsupraj
+              if (nj != 0) {
+                wsupraj <- ifelse(abs(wsupraj) > 
+                                  abs(wsupraj[order(abs(wsupraj))][nj]),
+                                  (abs(wsupraj) - 
+                                  abs(wsupraj[order(abs(wsupraj))][nj])) *
+                                  sign(wsupraj), 0)
+              }
+              ##########
+              wsuprak <- svd.z$v[, 1]
+              # L1 penalization for wsuprak
+              if (nk != 0) {
+                wsuprak <- ifelse(abs(wsuprak) > 
+                                  abs(wsuprak[order(abs(wsuprak))][nk]),
+                                  (abs(wsuprak) - 
+                                  abs(wsuprak[order(abs(wsuprak))][nk])) *
+                                  sign(wsuprak), 0)
+              }
+              ##########
+              tf <- Xd %*% kronecker(wsuprak, wsupraj)
+              qf <- crossprod(Y, tf)/mynorm(crossprod(Y, tf))
+              uf <- Y %*% qf
+              if (sum((uf - u)^2) < conver) {
                 if (!silent) {
                   cat(paste("Component number ", f, "\n"))
                   cat(paste("Number of iterations: ", it, "\n"))
@@ -97,58 +131,64 @@ sNPLS <- function(XN, Y, ncomp = 2, conver = 1e-16, max.iteration = 10000,
                 WkM <- MASS::ginv(crossprod(WsupraK)) %*% t(WsupraK)
                 WjM <- MASS::ginv(crossprod(WsupraJ)) %*% t(WsupraJ)
                 Gu[[f]] <- TM %*% X %*% kronecker(t(WkM), t(WjM))
-                # Xd <- Xd - Tm%*%Gu[[f]] %*% t(kronecker(WsupraK,WsupraJ))
-                P[[f]] = t(as.matrix(Gu[[f]]) %*% t(kronecker(WsupraK, WsupraJ)))
+                P[[f]] = t(as.matrix(Gu[[f]]) %*% 
+                         t(kronecker(WsupraK, WsupraJ)))
                 Y <- Y - Tm %*% bf %*% t(qf)
                 S <- svd(Y)$d
                 u <- Y[, S == max(S)]
-            } else {
+              } else {
                 u <- uf
                 it <- it + 1
+              }
             }
-        }
-    }
-    # Y adjusted
-    Yadjsc <- Tm %*% B %*% t(Q)
-    Yadj <- Yadjsc * y_scale + y_center
-    # Squared Error
-    SqrdE <- sum((Yorig - Yadj)^2)
-    # Output
-    rownames(WsupraJ) <- var.names
-    rownames(WsupraK) <- x3d.names
-    rownames(Q) <- yvar.names
-    rownames(Tm) <- rownames(U) <- x.names
-    colnames(Tm) <- colnames(WsupraJ) <- colnames(WsupraK) <- colnames(B) <-
-      colnames(U) <- colnames(Q) <- names(Gu) <- names(P) <- paste("Comp.", 1:ncomp)
-    output <- list(T = Tm, Wj = WsupraJ, Wk = WsupraK, B = B, U = U, Q = Q, P = P,
-                   Gu = Gu, ncomp = ncomp, Yadj = Yadj, SqrdE = SqrdE,
-                   Standarization = list(ScaleX = x_scale, CenterX = x_center,
-                                         ScaleY = y_scale, CenterY = y_center))
-    class(output)<-"sNPLS"
-    return(output)
+          }
+          Yadjsc <- Tm %*% B %*% t(Q)
+          Yadj <- Yadjsc * y_scale + y_center
+          SqrdE <- sum((Yorig - Yadj)^2)
+          rownames(WsupraJ) <- var.names
+          rownames(WsupraK) <- x3d.names
+          rownames(Q) <- yvar.names
+          rownames(Tm) <- rownames(U) <- x.names
+          colnames(Tm) <- colnames(WsupraJ) <- colnames(WsupraK) <- 
+                          colnames(B) <- colnames(U) <- colnames(Q) <- 
+                          names(Gu) <- names(P) <- paste("Comp.", 1:ncomp)
+          output <- list(T = Tm, Wj = WsupraJ, Wk = WsupraK, B = B, U = U, 
+                         Q = Q, P = P, Gu = Gu, ncomp = ncomp, Yadj = Yadj, 
+                         SqrdE = SqrdE, 
+                         Standarization = list(ScaleX = x_scale, 
+                                               CenterX = x_center,
+                                               ScaleY = y_scale, 
+                                               CenterY = y_center))
+          class(output)<-"sNPLS"
+          return(output)
 }
-
-\end{verbatim}
+\end{lstlisting}
 \end{scriptsize}
 
-\subsection{R matrix computation}
-This function is used for computing the coefficients used for prediction.
+Lines 1-5 define the parameters of the function. Parameters with default values have that value assigned after an equal sign. Line 7 defines an internal function for normalization. Lines 8-30 check for inconsistencies in the data structure, unfold \textbf{\underline{Y}} (when necessary) and assign variable names. After this, all necessary matrices are initiallized in lines 33-52, \textbf{\underline{X}} is unfolded into \textbf{X} and optional centering and scaling is applied on \textbf{Y} and \textbf{X}. The following lines (55-113) correspond to the $N$-PLS algorithm described in \autoref{NPLSpenalization}. Last lines (114-133) include the estimation of \textbf{Y}, the computing of the squared prediction error, and the generation of the output object of the function, defined as an S3 object of class \textit{sNPLS}. This object includes the different output matrices of the model as well as all the information regarding the model fit such as centering on \textbf{X} and/or \textbf{Y} and used values for the hyperparameters. 
 
+
+\subsection{R matrix computation}
+This function is used for computing the coefficients used for prediction of \textbf{Y} in the \textit{predic.sNPLS} function.
+\vspace{15pt}
 \begin{scriptsize}
-\begin{verbatim}
+\begin{lstlisting}[language=Python, caption=R matrix function]
 Rmatrix<-function(x) {
   WsupraK <- x$Wk
   WsupraJ <- x$Wj
   R <- matrix(nrow = dim(x$Wj)[1] * dim(x$Wk)[1], ncol = x$ncomp)
   ncomp <- x$ncomp
-  kroneckers<-sapply(1:x$ncomp, function(x) kronecker(WsupraK[, x], WsupraJ[, x]))
+  kroneckers<-sapply(1:x$ncomp, function(x) {
+                     kronecker(WsupraK[, x], WsupraJ[, x]))
+                     }
   tkroneckers<-apply(kroneckers, 2, function(x) t(x))
   R[,1] <- kroneckers[,1]
   if(ncomp>1){
     for(i in 2:ncomp){
       pi <- pi0 <- Matrix::Matrix(diag(dim(R)[1]), sparse=TRUE)
       for (j in 1:(i - 1)) {
-        pi <- Matrix::Matrix(pi %*% pi0 - kroneckers[,j] %*% t(tkroneckers[,j]), sparse=TRUE)
+        pi <- Matrix::Matrix(pi %*% pi0 - kroneckers[,j] %*% 
+        t(tkroneckers[,j]), sparse=TRUE)
       }
       w <- kroneckers[, i]
       pi <- pi %*% w
@@ -158,34 +198,56 @@ Rmatrix<-function(x) {
   return(R)
 }
 
-\end{verbatim}
+\end{lstlisting}
 \end{scriptsize}
 
-\subsection{Cross validation}
-This function is used to estimate the best combination of parameters for adjusting sNPLS models. It is parallelized to greatly speed up computation times, although it can also be run in only one thread.
+The \textit{Rmatrix} function is an internal function (not exported to the end user) called by the \textit{sNPLS} and \textit{predict.sNPLS} functions to get the regression coefficients in order to be able to perform predictions from new \textbf{\underline{X}} as explained in \parencite{leardi2005multi}:
 
+The \textbf{R} matrix is defined as:
+
+\begin{equation}
+    \textbf{\text{R}}=[\textbf{\text{w}}_1(\textbf{\text{I}}-\textbf{\text{w}}_1\textbf{\text{w}}^T_1)\textbf{\text{w}}_2 \dots (\prod_{f=1}^{F-1}(\textbf{\text{I}}-\textbf{\text{w}}_f\textbf{\text{w}}^T_f)\textbf{\text{w}}_F)]
+\end{equation}
+
+From this, it derives that
+
+\begin{equation}
+    \textbf{\text{T}}=\textbf{\text{XR}}
+\end{equation}
+
+So, from the equation
+
+\begin{equation}
+    \hat{\textbf{\text{y}}}=\textbf{\text{Tb}}
+\end{equation}
+
+We obtain
+
+\begin{equation}
+    \textbf{\text{b}}_{NPLS}=\textbf{\text{Rb}}
+\end{equation}
+
+\subsection{Cross validation (\textit{cv\_snpls})}
+The \textit{cv\_snpls} function is used to estimate the best combination of parameters for adjusting sNPLS models using $K$-fold cross-validation. Since the hyperparameter space can be huge when considering a grid search for three different hyperparameters, it has been parallelized using the \textit{parallel} package to greatly speed up computation times. For simple problems or small data sets it can also be run in single thread mode.
+\vspace{15pt}
 \begin{scriptsize}
-\begin{verbatim}
+\begin{lstlisting}[language=Python, caption=Cross validation function]
 cv_snpls <- function(X_npls, Y_npls, ncomp = 1:3, keepJ = 1:ncol(X_npls),
-                     keepK = 1:dim(X_npls)[3], nfold = 10, parallel = TRUE, free_cores = 2, ...) {
+                     keepK = 1:dim(X_npls)[3], nfold = 10, parallel = TRUE, 
+                     free_cores = 2, ...) {
     if (parallel & (parallel::detectCores()>1)) {
-        cl <- parallel::makeCluster(max(2, parallel::detectCores() - free_cores))
+        cl <- parallel::makeCluster(max(2, 
+                                    parallel::detectCores() - free_cores))
         parallel::clusterExport(cl, list(deparse(substitute(X_npls)),
                                          deparse(substitute(Y_npls))))
         parallel::clusterCall(cl, function() require(sNPLS))
     }
-  # Definition of internal fitting function for CVE estimation
-  cv_fit <- function(xtrain, ytrain, xval, yval, ncomp, keepJ, keepK, ...) {
-  fit <- sNPLS(XN = xtrain, Y = ytrain, ncomp = ncomp, keepJ = keepJ,
-               keepK = keepK, silent = TRUE, ...)
-  Y_pred <- predict(fit, xval)
-  CVE <- sqrt(mean((Y_pred - yval)^2))
-  return(CVE)
-  }
   if(length(dim(Y_npls)) == 3) Y_npls <- unfold3w(Y_npls)
   top <- ceiling(dim(X_npls)[1]/nfold)
     foldid <- sample(rep(1:nfold, top), dim(X_npls)[1], replace = F)
-    search.grid <- expand.grid(list(ncomp = ncomp, keepJ = keepJ, keepK = keepK))
+    search.grid <- expand.grid(list(ncomp = ncomp, 
+                                    keepJ = keepJ, 
+                                    keepK = keepK))
     SqrdE <- numeric()
     applied_fun <- function(y) {
         sapply(1:nfold, function(x) {
@@ -199,12 +261,10 @@ cv_snpls <- function(X_npls, Y_npls, ncomp = 1:3, keepJ = 1:ncol(X_npls),
                      error=function(x) NA)
           })
     }
-    # Parallelization
     if (parallel) {
         cv_res <- parallel::parApply(cl, search.grid, 1, applied_fun)
         parallel::stopCluster(cl)
     } else cv_res <- pbapply::pbapply(search.grid, 1, applied_fun)
-    # Results
     cv_mean <- apply(cv_res, 2, function(x) mean(x, na.rm = TRUE))
     cv_se <- apply(cv_res, 2, function(x) sd(x, na.rm=TRUE)/sqrt(nfold))
     best_model <- search.grid[which.min(cv_mean), ]
@@ -213,30 +273,72 @@ cv_snpls <- function(X_npls, Y_npls, ncomp = 1:3, keepJ = 1:ncol(X_npls),
     class(output)<-"cvsNPLS"
     return(output)
 }
-\end{verbatim}
+\end{lstlisting}
 \end{scriptsize}
 
+Of note, regarding the \textit{cv\_snpls} function, is the code related to the parallelization of the procedure using the \textit{parallel} package (lines 4-10 for the definition of the cluster and lines 30-33 for the execution of the parallelized procedure). The function makes use of the \textit{parApply} function, which splits the search grid in $n$ nodes and runs the cross-validation procedure on each split independently, combining all results at the end of the computations. Lines 18-29 of the function correspond to the cross-validation procedure defined in \autoref{hyperparameters}.
+
+\subsection{Repeated Cross validation (\textit{repeat\_cv})}
+\label{repeatcv}
+The \textit{repeat\_cv} calls the \textit{cv\_snpls} function repeated times, but it changes the way of parallelizing the computations. In this function, each cv\_snpls call is run in single thread mode, but assigned to a different node. So, instead on subsets of the search grid, the parallelization is performed on repetitions of the procedure on the whole grid.
+\vspace{15pt}
+\begin{lstlisting}[language=Python, caption=Repeated cross validation function]
+repeat_cv<-function(X_npls, Y_npls, ncomp = 1:3, keepJ = 1:ncol(X_npls), 
+                    keepK = 1:dim(X_npls)[3], nfold = 10, 
+                    parallel = TRUE, free_cores = 2, times=30, ...){
+  if(parallel & (parallel::detectCores()>1)){
+    cl <- parallel::makeCluster(max(2, 
+                                parallel::detectCores() - free_cores))
+    parallel::clusterExport(cl, list(deparse(substitute(X_npls)), 
+                                     deparse(substitute(Y_npls))))
+    parallel::clusterCall(cl, function() require(sNPLS))
+    rep_cv<-parallel::parSapply(cl, 1:times, function(x){
+                                cv_snpls(X_npls, Y_npls, ncomp=ncomp, 
+                                keepJ = keepJ, keepK = keepK, 
+                                parallel = FALSE, nfold = nfold, ...))
+                                }
+    parallel::stopCluster(cl)
+  } else {
+    rep_cv<-pbapply::pbreplicate(times, cv_snpls(X_npls, Y_npls, 
+                                 ncomp=ncomp, keepJ = keepJ, 
+                                 keepK = keepK, parallel = FALSE, 
+                                 nfold = nfold, ...))
+  }
+  resdata<-data.frame(ncomp=sapply(rep_cv[1,], function(x) x[[1]]), 
+                      keepJ=sapply(rep_cv[1,], function(x) x[[2]]),
+                      keepK=sapply(rep_cv[1,], function(x) x[[3]]))
+  class(resdata)<-c("repeatcv", "data.frame")
+  return(resdata)
+}
+\end{lstlisting}
+
+
 \section{The sNPLS package}
+In the following section, the use of the different functions of the \textit{sNPLS} package will be presented, as well as examples of their application to the different parts of the analysis in two data sets. A special emphasis will be given to the cross-validation functions for the selection of the hyperparameters and to the different plot functions for the interpretation of results. This section is based on our published paper for the \textit{sNPLS} package \parencite{hervas2018sparse}.
+
 \subsection{Functions}
 \subsubsection{sNPLS function}
 Function \texttt{sNPLS} is used to fit $N$-PLS and sNPLS models to three-way data, depending on the input settings of the algorithm. The following \textit{R} code shows an example of a model fit to a simulated three-way dataset.
-
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> library("sNPLS")
 R> X_npls <- array(rpois(7500, 10), dim=c(50, 50, 3))
-R> Y_npls <- matrix(2+0.4*X_npls[,5,1]+0.7*X_npls[,10,1]- 0.9*X_npls [,15,1]+ 
-+    0.6*X_npls[,20,1] - 0.5*X_npls[,25,1]+rnorm(50), ncol=1)
-R> fit <- sNPLS(X_npls, Y_npls, ncomp=3, keepJ = rep(2,3) , keepK = rep(1,3))
-\end{verbatim}
+R> Y_npls <- matrix(2+0.4*X_npls[,5,1]+0.7*X_npls[,10,1]- 
++    0.9*X_npls[,15,1] + 0.6*X_npls[,20,1] - 0.5*X_npls[,25,1]+
++    rnorm(50), ncol=1)
+R> fit <- sNPLS(X_npls, Y_npls, ncomp=3, keepJ = rep(2,3), 
++    keepK = rep(1,3))
+\end{lstlisting}
 
-Note that the function \texttt{sNPLS} needs a $N$-way array for \textbf{\underline{X}} and any $N$-way array for \textbf{\underline{Y}} as inputs. If data is in another format the function will throw an error. In the following, a generic call with an explanation of each of the arguments of the function is presented.
-
-\begin{verbatim}
+Note that the function \texttt{sNPLS} needs a $N$-way array for \textbf{\underline{X}} and an $N$-way array or a two-dimensional matrix for \textbf{Y} as inputs. If data is in another format the function will throw an error. In the following, a generic call with an explanation of each of the arguments of the function is presented.
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 sNPLS(XN, Y, ncomp = 2, conver = 1e-16, max.iteration = 10000,
-+    keepJ = rep(ncol(XN), ncomp), keepK = rep(rev(dim(XN))[1], ncomp),
++    keepJ = rep(ncol(XN), ncomp), 
++    keepK = rep(rev(dim(XN))[1], ncomp),
 +    silent = F)
-\end{verbatim}
-
+\end{lstlisting}
+\vspace{10pt}
 \begin{itemize}[leftmargin=2.5cm]
 \item[XN] $N$-dimensional array containing the predictors
 \item[Y] Array containing the response(s)
@@ -247,27 +349,30 @@ sNPLS(XN, Y, ncomp = 2, conver = 1e-16, max.iteration = 10000,
 \item[keepK] Number of elements of the third mode to keep at each component.
 \item[silent] Allows to choose if information regarding number of iterations should be displayed
 \end{itemize}
-
+\vspace{7pt}
 The function \texttt{sNPLS} produces an \texttt{S3 sNPLS} object with defined \texttt{coef}, \texttt{predict} and \texttt{plot} methods that will be discussed later. The object consists of a list containing the following components: [1-6] The \textbf{T}, $\textbf{\text{W}}^{J}$, $\textbf{\text{W}}^{K}$, \textbf{B} (regression coefficients between \textbf{\underline{X}} and \textbf{\underline{Y}}), \textbf{Y} and \textbf{Q} matrices, [7-8] \textbf{P} and \textbf{G}u (the unfolded \textbf{G} core array of the Tucker decomposition), [9] The number of components, [10] Fitted values, [11] Squared error, [12] Scale and centering information performed on \textbf{\underline{X}} and \textbf{Y}.
 
 \subsubsection{cv\_sNPLS and repeat\_cv functions}
 Selecting parameter values for the \texttt{sNPLS} function requires choosing values for the number of components, the number of variables to select and the number of elements of the third mode to select. An appropriate way of selecting these parameters is performing a grid search with cross-validation. The function \texttt{cv\_snpls} performs cross-validation on a grid of different \texttt{ncomp}, \texttt{keepJ} and \texttt{keepK} values estimating $RMSE$ (Root Mean Square Error) for each combination of values and selecting the best set producing the lowest $RMSE$.
 
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> X_npls<-array(rpois(7500, 10), dim=c(50, 50, 3))
-R> Y_npls<-matrix(2+0.4*X_npls[,5,1]+0.7*X_npls[,10,1]-0.9*X_npls[,15,1]+
-+    0.6*X_npls[,20,1]- 0.5*X_npls[,25,1]+rnorm(50), ncol=1)
-R> cv1<- cv_snpls(X_npls, Y_npls, ncomp=1:2, keepJ = 1:10, keepK = 1:3, 
-+    parallel = FALSE)
-\end{verbatim}
+R> Y_npls<-matrix(2+0.4*X_npls[,5,1]+0.7*X_npls[,10,1]-
++    0.9*X_npls[,15,1]+0.6*X_npls[,20,1]- 0.5*X_npls[,25,1]+
++    rnorm(50), ncol=1)
+R> cv1<- cv_snpls(X_npls, Y_npls, ncomp=1:2, keepJ = 1:10, 
++    keepK = 1:3, parallel = FALSE)
+\end{lstlisting}
 
 The generic call for \texttt{cv\_snpls} is the following:
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> cv_snpls(X_npls, Y_npls, ncomp = 1:3, keepJ = 1:ncol(X_npls),
 +   keepK = 1:dim(X_npls)[3], nfold = 10, parallel = FALSE)
-\end{verbatim}
+\end{lstlisting}
 
-It contains the same parameters as \texttt{sNPLS} but now admits vectors of values for each parameter in \texttt{ncomp}, \texttt{keepJ} and \texttt{keepK}. Since grid search can be computationally intensive, it makes use of the \textit{parallel} package. Being able to perform computations in parallel greatly reduces running times. Parallel mode is activated by setting \texttt{parallel} argument to \texttt{TRUE} and selecting a suitable number of free cores. In the case of \texttt{cv\_snpls}, the parallelization applies to the grid search, not to the different folds of the cross-validation. To further reduce computation times and improve memory use, sparse matrices from the \textit{R} package \textit{Matrix} \parencite{matrixsparse} are used whenever possible in the matrix multiplication steps of the function. Sparse matrices achieve these goals by using an alternative representation to that of dense matrices: instead of being stored as two-dimensional arrays, only their non-zero values are stored, along with an index linking these values with their location in the matrix. The function \texttt{cv\_snpls} returns a \texttt{cvsnpls} object which is a list with a component containing the best combination parameters and other components containing information about the grid and its corresponding \texttt{RMSE}. \texttt{cv\_snpls} objects  can be plotted for better interpretation of the results. The resulting plot is a grid of scatterplots with the different combinations of \texttt{keepJ}, \texttt{keepK} and \texttt{ncomp} and their resulting cross-validation errors (\autoref{figura04}).
+It contains the same parameters as \texttt{sNPLS} but now admits vectors of values for each parameter in \texttt{ncomp}, \texttt{keepJ} and \texttt{keepK}. Since grid search can be computationally intensive, it makes use of the \textit{parallel} package. Being able to perform computations in parallel greatly reduces running times. Parallel mode is activated by setting \texttt{parallel} argument to \texttt{TRUE} and selecting a suitable number of free cores. As explained in \autoref{repeatcv}, in the case of \texttt{cv\_snpls}, the parallelization applies to the grid search, not to the different folds of the cross-validation. To further reduce computation times and improve memory use, sparse matrices from the \textit{R} package \textit{Matrix} \parencite{matrixsparse} are used whenever possible in the matrix multiplication steps of the function. Sparse matrices achieve these goals by using an alternative representation to that of dense matrices: instead of being stored as two-dimensional arrays, only their non-zero values are stored, along with an index linking these values with their location in the matrix. The function \texttt{cv\_snpls} returns a \texttt{cvsnpls} object which is a list with a component containing the best combination parameters and other components containing information about the grid and its corresponding \texttt{RMSE}. \texttt{cv\_snpls} objects  can be plotted for better interpretation of the results. The resulting plot is a grid of scatterplots with the different combinations of \texttt{keepJ}, \texttt{keepK} and \texttt{ncomp} and their resulting cross-validation errors (\autoref{figura04}).
 
 \begin{figure}[!ht]
 	\centering
@@ -278,20 +383,21 @@ It contains the same parameters as \texttt{sNPLS} but now admits vectors of valu
 
 A known issue of cross-validation is the variance in its results \parencite{krstajic2014cross}, which entails that different runs of the cross-validation procedure can yield different results regarding the estimated best set of parameters. A reasonable solution is performing repeated cross-validation and selecting the most frequently selected set of parameters along a round of different runs. The function \texttt{repeat\_cv} performs repeated cross-validation by calling the function \texttt{cv\_snpls} repeated times and storing each result in a \texttt{data.frame} object. The syntax is the same as in \texttt{cv\_snpls} with an extra argument \texttt{times} for specifying the number of repetitions to perform. In the case of \texttt{repeat\_cv} the parallelization applies to the replicates instead of applying to the grid search. The following code explains how to perform repeated cross-validation with \texttt{repeat\_cv}.
 
-\medskip
-\begin{verbatim}
-R> repcv <- repeat_cv(X_npls, Y_npls, ncomp=1:2, keepJ = 1:10, keepK = 1:3,  
-+    parallel = FALSE, times=10)
-\end{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
+R> repcv <- repeat_cv(X_npls, Y_npls, ncomp=1:2, keepJ = 1:10, 
++    keepK = 1:3, parallel = FALSE, times=10)
+\end{lstlisting}
 
-\medskip
-The result of the \texttt{repeat\_cv} call is a \texttt{data.frame} storing the results of each cross-validation repetition. 
+The result of the \texttt{repeat\_cv} call is a \texttt{data.frame} storing the results (best combination of \texttt{ncomp}, \texttt{keepJ} and \texttt{keepK} of each cross-validation repetition (\autoref{output1}). 
 
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> repcv
-\end{verbatim}
+\end{lstlisting}
 
-\begin{verbatim}
+\vspace{5pt}
+\begin{lstlisting}[basicstyle=\small, backgroundcolor=\color{output}, numbers=none, label={output1}, language=Python, caption=Results of \texttt{repeat\_cv} function.]
    ncomp keepJ keepK
 1      2     9     1
 2      2     9     1
@@ -303,15 +409,16 @@ R> repcv
 8      2    10     1
 9      2     8     1
 10     2    12     2
-\end{verbatim}
+\end{lstlisting}
 
-This output can be presented as a cross-tabulation table with the absolute frequencies of each combination of the different parameters. In our example, the table shows that the combination \texttt{ncomp}=2, \texttt{keepJ}=9 and \texttt{keepK}=1 is the most recurrent (3 out of 10 repetitions).
+This output can be presented as a cross-tabulation table with the absolute frequencies of each combination of the different parameters (\autoref{output2}. In our example, the table shows that the combination \texttt{ncomp}=2, \texttt{keepJ}=9 and \texttt{keepK}=1 is the most recurrent (3 out of 10 repetitions), followed by the combination \texttt{ncomp}=2, \texttt{keepJ}=10 and \texttt{keepK}=1 with two repetitions and five other different combinations with just one occurrence each.
 
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> ftable(table(repcv))
-\end{verbatim}
+\end{lstlisting}
 
-\begin{verbatim}
+\begin{lstlisting}[basicstyle=\small, backgroundcolor=\color{output}, numbers=none, label={output2}, language=Python, caption=Cross-tabulation table of the results of \texttt{repeat\_cv}.]
             keepK 1 2
 ncomp keepJ          
 2     7           1 0
@@ -320,34 +427,38 @@ ncomp keepJ
       10          2 0
       11          0 1
       12          1 1
-\end{verbatim}
+\end{lstlisting}
 
-Results of the \texttt{repeat\_cv} function can also be plotted to obtain a kernel density plot, which can be one-, two- or three-dimensional depending of the number of constant parameters obtained in the repeated cross-validation procedure. This density plot depicts the most frequently selected parameters (\autoref{figura05}). In this example, according to the plot, the most likely combination after all repetitions of the cross-validation was between 9 and 10 in the case of \texttt{keepJ} and \texttt{keepK}=1. Since the optimal number of components did not vary along all the repetitions, this parameter is not represented in the plot. Instead, the message \texttt{'ncomp is(are) constant with a value of 2'} is returned by the function. The density plot leads to a similar interpretation of the results as the cross-tabulation table, but the smoothing can result in more sensible estimates in the case of multiple and/or wide spread modes. It also provides a visual measure of the uncertainty in the selection of the best combination of parameters.
-
+Results of the \texttt{repeat\_cv} function can also be plotted to obtain a kernel density plot, which can be one-, two- or three-dimensional depending of the number of constant parameters obtained in the repeated cross-validation procedure. This density plot depicts the most frequently selected parameters (\autoref{figura05}). 
+\vspace{10pt}
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.7\textwidth]{figura05.pdf}
 \caption{Kernel density plot with the result of the repeated cross-validation. Highest density lies around \texttt{keepJ}=9 and \texttt{keepK}=1. Points scaled in size by frequency of appearance are additionally included on top of the density plot. The number of components is not represented since it was constant at 2 in all repetitions of the cross-validation.}
 \label{figura05}
 \end{figure}
+
+In this example, according to the plot, the most likely combination after all repetitions of the cross-validation was between 9 and 10 in the case of \texttt{keepJ} and \texttt{keepK}=1. Since the optimal number of components did not vary along all the repetitions, this parameter is not represented in the plot. Instead, the message \texttt{'ncomp is(are) constant with a value of 2'} is returned by the function. The density plot leads to a similar interpretation of the results as the cross-tabulation table, but the smoothing can result in more sensible estimates in the case of multiple and/or wide spread modes. It also provides a visual measure of the uncertainty in the selection of the best combination of parameters.
+
 \subsubsection{Full example functionality}
 To exhibit all package functionality, next we provide a complete analysis of the \texttt{bread} dataset \parencite{bro1998multi} included in the \textit{sNPLS} package. This dataset consists on data of five different breads that were baked in duplicate giving a total of ten samples. Eight different judges assessed the breads with respect to eleven different sensorial attributes. The data can be regarded as a three-way array (10 x 11 x 8). The data are quite noisy as opposed to, e.g., spectral data. The salt content of each bread was also measured and it is considered as the response variable \textbf{y}.
-
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> data(bread)
 R> Xbread <- bread$Xbread
 R> Ybread <- bread$Ybread
 R> cv_bread <- repeat_cv(Xbread, Ybread, ncomp=1:3, keepJ = 1:11,   
 +    keepK = 1:8, parallel = FALSE, times=50, nfold=3)
-\end{verbatim}
+\end{lstlisting}
 
-First, repeated cross-validation is performed on the data to select the optimal parameters. 50 repetitions should be enough to get stable estimates, but using such a large number of repetitions can increase computing times dramatically. Therefore, using the option \texttt{parallel=TRUE} when performing repeated cross-validation is recommended. Results of this procedure yield a cross-tabulation table with the appearance frequencies for each combination of parameters.
+First, repeated cross-validation is performed on the data to select the optimal parameters. 50 repetitions should be enough to get stable estimates, but using such a large number of repetitions can increase computing times dramatically. Therefore, using the option \texttt{parallel=TRUE} when performing repeated cross-validation is recommended. Results of this procedure yield a cross-tabulation table with the appearance frequencies for each combination of parameters \autoref{output3}.
 
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> ftable(table(cv_bread)) 
-\end{verbatim}
+\end{lstlisting}
 
-\begin{verbatim}
+\begin{lstlisting}[basicstyle=\small, backgroundcolor=\color{output}, numbers=none, label={output3}, language=Python, caption=\texttt{repeat\_cv} results for the \texttt{bread} data set.]
             keepK 1 2 3 4 5 6 7 8
 ncomp keepJ                      
 1     1           1 2 2 4 3 3 1 1
@@ -366,7 +477,7 @@ ncomp keepJ
       3           0 0 0 0 0 0 0 1
       5           0 0 0 0 0 0 0 1
       8           0 0 0 0 0 0 0 1
-\end{verbatim}      
+\end{lstlisting}    
       
 This table shows that there are two possible combinations of parameters that are almost equally selected by cross-validation. One is \texttt{ncomp}=1, \texttt{keepJ}=1 and \texttt{keepK}=4 and the other is \texttt{ncomp}=2, \texttt{keepJ}=3 and \texttt{keepK}=8, both with 4 appearances out of 50 repetitions. Also most of the other combinations are close to one of these two mentioned 'hotspots'. A plot of the \texttt{cv\_bread} object (\autoref{figura06}) reveals a similar information with a representation of a sliced three-dimensional kernel density estimate.
 
@@ -380,19 +491,20 @@ This table shows that there are two possible combinations of parameters that are
 
 Next step would be fitting the \texttt{sNPLS} model using the \texttt{sNPLS} function with the selected set of parameters. As discussed before, our results point to two possible combinations and, based on the density plot, the option with \texttt{ncomp}=1, \texttt{keepJ}=1 and \texttt{keepK}=4 seems more likely. Nevertheless, we will use the combination with \texttt{ncomp}=2 to get working examples of the \texttt{plot} function (which needs, at least, two dimensions). It is important to take into account that \texttt{keepJ} and \texttt{keepK} have to be specified for each component, so they must be a vector of length equal to the number of components. Note that, in this case, we have chosen the same number of attributes and judges for each component, although this is not necessarily the case.
 
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> fit <- sNPLS(Xbread, Ybread, ncomp = 2, keepJ = rep(3, 2), 
 +    keepK = rep(8, 2), silent = F)
-\end{verbatim}
+\end{lstlisting}   
 
 The summary of the fit shows the number of components, the estimated squared error and a matrix with rows corresponding to attributes (second mode) and columns corresponding to judges (third mode). In this matrix there are five rows with non-zero coefficients which correspond to the 4th, 6th 7th 8th and 9th attributes from all the judges (no selection is performed on the third mode).
 
-\begin{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
 R> summary(fit)
-\end{verbatim}
+\end{lstlisting}   
 
-
-\begin{verbatim}
+\begin{lstlisting}[basicstyle=\small, backgroundcolor=\color{output}, numbers=none, label={output4}, language=Python, caption=Summary with the coefficients of the fitted model.]
 
 sNPLS model with 2 components and squared error of 0.047 
  
@@ -409,14 +521,17 @@ X.8  -0.030 -0.038 -0.037 -0.041 -0.038 -0.038 -0.030 -0.050
 X.9  -0.009 -0.009 -0.010 -0.011 -0.017 -0.009 -0.009 -0.006
 X.10  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000
 X.11  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000
-\end{verbatim}
+\end{lstlisting}  
 
 To better understand and interpret the results, the plot function can be used to display different visualizations of the results. Values of the \textbf{T} (\autoref{figura07}), \textbf{U} (\autoref{figura08}), $\textbf{\text{W}}^{J}$ (\autoref{figura09} and \autoref{figura11}), and $\textbf{\text{W}}^{K}$ (\autoref{figura10} and \autoref{figura12}) matrices can be plotted by changing the \texttt{type} parameter of the function. 1st and 2nd components are plotted by default, but they can be changed using the \texttt{comps} parameter.
 
-\begin{verbatim}
-R> plot(fit, type="T", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L")
-R> plot(fit, type="U", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L")
-\end{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
+R> plot(fit, type="T", cex.axis=1.2, cex.lab=1.2, cex=1.2, 
++    las=1, bty="L")
+R> plot(fit, type="U", cex.axis=1.2, cex.lab=1.2, cex=1.2, 
++    las=1, bty="L")
+\end{lstlisting}
 
 
 \begin{figure}[!ht]
@@ -433,12 +548,15 @@ R> plot(fit, type="U", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L")
 \label{figura08}
 \end{figure}
 
-Figure 5 shows how the 10 samples spread over the two first components. It can be seen how the samples evolve every two observations, from left to right, which seems reasonable attending to their different composition. Figure 6 is similar, but related to the \textbf{y} scores. 
+\autoref{figura07} shows how the 10 samples spread over the two first components. It can be seen how the samples evolve every two observations, from left to right, which seems reasonable attending to their different composition. \autoref{figura08} is similar, but related to the \textbf{y} scores. 
 
-\begin{verbatim}
-R> plot(fit, type="Wj", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L")
-R> plot(fit, type="Wk", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L")
-\end{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
+R> plot(fit, type="Wj", cex.axis=1.2, cex.lab=1.2, cex=1.2, 
++    las=1, bty="L")
+R> plot(fit, type="Wk", cex.axis=1.2, cex.lab=1.2, cex=1.2, 
++    las=1, bty="L")
+\end{lstlisting}
 
 \begin{figure}[!ht]
 \centering
@@ -447,7 +565,7 @@ R> plot(fit, type="Wk", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L")
 \label{figura09}
 \end{figure}
 
-On the other hand, Figure 7 presents the attributes and Figure 8 the judges that help in predicting the \textbf{y} variable, for each of the two components. It can be seen that the first component of the attributes mode is related to attributes 7, 8 and 6 (in descending order in absolute values); whereas attributes 4, 9 and 6 are related to the second component. This can be also derived from Figure 9, which produces an equivalent graph. In this case, when trying to see what kind of relationship these attributes have with the judges’ mode, Figure 10 provides easier-to-interpret results.
+On the other hand, \autoref{figura09} presents the attributes and \autoref{figura10} the judges that help in predicting the \textbf{y} variable, for each of the two components. It can be seen that the first component of the attributes mode is related to attributes 7, 8 and 6 (in descending order in absolute values); whereas attributes 4, 9 and 6 are related to the second component. This can be also derived from \autoref{figura11}, which produces an equivalent graph. In this case, when trying to see what kind of relationship these attributes have with the judges’ mode, \autoref{figura12} provides easier-to-interpret results.
 
 \begin{figure}[!ht]
 \centering
@@ -456,12 +574,13 @@ On the other hand, Figure 7 presents the attributes and Figure 8 the judges that
 \label{figura10}
 \end{figure}
 
-\begin{verbatim}
-R> plot(fit, type="variables", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, 
-+   bty="L", lwd=2)
-R> plot(fit, type="time", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L", 
-+   lwd=2, xlab="Judge")
-\end{verbatim}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
+R> plot(fit, type="variables", cex.axis=1.2, cex.lab=1.2, 
++   cex=1.2, las=1, bty="L", lwd=2)
+R> plot(fit, type="time", cex.axis=1.2, cex.lab=1.2, cex=1.2, 
++   las=1, bty="L", lwd=2, xlab="Judge")
+\end{lstlisting}
 
 \begin{figure}[!ht]
 	\centering
@@ -470,7 +589,7 @@ R> plot(fit, type="time", cex.axis=1.2, cex.lab=1.2, cex=1.2, las=1, bty="L",
 \label{figura11}
 \end{figure}
 
-It can be seen how, for the first component, there is approximately the same effect of all judges with respect variables 7, 8 and 6 (those related to the first component in the attributes mode) when trying to predict the salt content. In this case, since the judges’ weights show positive values, the higher the value of attributes 7 and 6, and the lower the value of attribute 8, the higher the salt content. For the second component, attributes 4, 9 and 6 are more influenced by judge 5, even though the rest of judges also have a similar effect on the salt content scoring (y variable). Since the weights of the judges’ mode are all negative for the second component, the higher the value of attributes 4, 9 and 6, the lower the salt content. In this case, Figure 8 is less interpretable. However, depending on the case, one representation or another might provide easier-to-interpret results; so it is decided to keep both graphs in the package.
+It can be seen how, for the first component, there is approximately the same effect of all judges with respect variables 7, 8 and 6 (those related to the first component in the attributes mode) when trying to predict the salt content. In this case, since the judges’ weights show positive values, the higher the value of attributes 7 and 6, and the lower the value of attribute 8, the higher the salt content. For the second component, attributes 4, 9 and 6 are more influenced by judge 5, even though the rest of judges also have a similar effect on the salt content scoring (y variable). Since the weights of the judges’ mode are all negative for the second component, the higher the value of attributes 4, 9 and 6, the lower the salt content. In this case, \autoref{figura10} is less interpretable. However, depending on the case, one representation or another might provide easier-to-interpret results; so it is decided to keep both graphs in the package.
 
 \begin{figure}[!ht]
 	\centering
@@ -479,15 +598,18 @@ It can be seen how, for the first component, there is approximately the same eff
 \label{figura12}
 \end{figure}
 
-As seen on these examples, all plots produced by the \texttt{plot} function are fully customizable using \textit{base} plot parameters such as \texttt{las}, \texttt{cex}, \texttt{bty}, etc.
-\vspace{15px}
-The \texttt{predict} function can be used to make predictions using new data. Here we use it to make a prediction from a new \textbf{\underline{X}} array with 8 new observations. This function also has an optional parameter \texttt{scale} which defaults to \texttt{TRUE} for controlling the final scale of the predictions (original vs. scaled).
+As seen on these examples, all plots produced by the \texttt{plot} function are fully customizable, being able to change the axis, orientation of labels, size of the plot, etc., by using \textit{base} plot parameters such as \texttt{las}, \texttt{cex}, \texttt{bty}, etc.
 
-\begin{verbatim}
-newX<-array(sample(0:5, 8*11*8, replace=TRUE), dim=c(8, 11, 8))
+The \texttt{predict} function can be used to make predictions using new data. Here we use it to make a prediction from a new \textbf{\underline{X}} array with 8 new observations (\autoref{output5}). This function also has an optional parameter \texttt{scale} which defaults to \texttt{TRUE} for controlling the final scale of the predictions (original scale vs. post-processing scale).
+
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, language=Python]
+newX <- array(sample(0:5, 8*11*8, replace = TRUE), 
++    dim = c(8, 11, 8))
 predict(fit, newX)
-\end{verbatim}
-\begin{verbatim}
+\end{lstlisting}
+\vspace{15pt}
+\begin{lstlisting}[basicstyle=\small, backgroundcolor=\color{output}, numbers=none, label={output5}, language=Python, caption=Predictions of the model on new data \texttt{newX}.]
             Y.1
  [1,] 1.4196482
  [2,] 0.7819288
@@ -497,7 +619,7 @@ predict(fit, newX)
  [6,] 0.7243910
  [7,] 0.6458718
  [8,] 1.2693292
-\end{verbatim}
+\end{lstlisting}
 
 The output of the function is a \textbf{Y} matrix with the 8 predicted values.
 
@@ -514,4 +636,12 @@ The package offers a complete set of functions for tuning, fitting and interpret
 The package also greatly benefits from the use of specialized Basic Linear Algebra Subprograms (BLAS) such as OpenBLAS, ATLAS or Intel\textregistered  MKL, which can produce speedups of up to 10 times faster computation times \parencite{xianyi2014openblas, wang2014intel}. In this case, the potential benefit is left to the decision of the end user, that should install and link one of these BLAS libraries to \textit{R}.
 
 \section{Future work}
+The current version of the package is the 0.3.33, which is the 56th update of the initial package. At its current state, the package is fully functional, being able of fitting sparse and standard $N$-PLS models, efficiently performing cross-validation and repeated cross-validation and providing useful plots for the interpretation of results. The package recently incorporated generic functions for models such as \texttt{coef}, \texttt{summary} and \texttt{predict} and also has fixed all the detected bugs of the first versions of the software. According to the statistics given by \textit{CRAN}, the \texttt{sNPLS} package averages around 240 downloads per month and has accumulated more than 4500 downloads.
 
+For future versions of the package one of the priorities is including more options for the application of the penalization factor. Currently, the L1-penalty is determined by choosing the number of non-zero elements in $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$, which can be determined by $K$-fold cross-validation or arbitrarily by the user. Ideally, the L1-penalty values should come from a continuous distribution, being able to take any value, not just discrete values as of now. Related to the application of penalty, we are also studying the possibility of adding an option for L0 penalty, This penalty can be applied using the hard-thresholding operator \parencite{zou2006adaptive}, so it should be straightforward to implement in future versions of the package.
+
+Also the cross-validation procedure does not currently try all the possible combinations of the hyperparameter space, because when there is more than one component, all components are forced to have the same number of \texttt{keepJ} and \texttt{keepK} values. This constrain is only applied because of computational deficiency, so different alternatives are being studied to be able to improve efficiency of the cross-validation procedure, thus removing the need for constraining the hyperparameter space. One of such alternatives, which will be implemented in future versions of the package will be the substitution of the grid search procedure for a random search procedure which has been demonstrated to be more efficient and also provide better estimates of uncertainty \parencite{bergstra2012random}. 
+
+Other planned addition is the modification of the plot function so that it creates objects with all the information about the plot instead of only producing them. This way, the user will be able to fully personalize their plots and also make their plot fully reproducible without the new of repeating a large analysis.
+
+Finally, another objective is adding more useful functions to the package for providing a comprehensive framework for three-way analyses. Functions for performing Tucker and PARAFAC models, more pre-processing functions and an extended documentation of all of them will be included in future versions of the package.

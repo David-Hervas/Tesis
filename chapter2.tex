@@ -122,7 +122,16 @@ In summary, hypothesis testing for the analysis of metabolomic data suffers from
 
 \section{Principal Component analysis}
 \label{sec:PCA}
-It has already been exposed that linear models could be an appropriate solution for analyzing metabolomic data sets. One of the important issues with them is the saturation of their degrees of freedom when the number of variables is large. Principal component analysis (PCA) is a dimensionality reduction technique, that can be used to reduce the number of variables prior to modeling, thus helping to overcome one of the problems of linear models in the context of high dimensionality data sets \parencite{wang2008principal}.
+It has already been exposed that linear models could be an appropriate solution for analyzing metabolomic data sets. One of the important issues with them is the saturation of their degrees of freedom when the number of variables is large. Principal component analysis (PCA) is a dimensionality reduction technique, that can be used to reduce the number of variables prior to modeling, thus helping to overcome one of the problems of linear models in the context of high dimensionality data sets \parencite{wang2008principal}. An illustration of the dimensionality reduction capability of PCA is provided in \autoref{figura33}.
+
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.75\textwidth]{figura33.png}
+\caption{Plot of the first three principal components of a miRNA dataset. These components carry enough information to be able to discriminate four different groups of samples.}
+\label{figura33}
+\end{figure}
+
 Formally, PCA is defined as an orthogonal linear transformation that projects the data in a new coordinate system such that the greatest variance of the data lies in the first dimension, the second greatest variance in the second dimension, and so on until the number of components is equal to the number of original dimensions. The full principal components decomposition of \textbf{X} is given by (\autoref{equation07}).
 
 \begin{equation}
@@ -130,4 +139,6 @@ Formally, PCA is defined as an orthogonal linear transformation that projects th
 \textbf{\text{T}} = \textbf{\text{XW}}
 \end{equation}
 
-Where \textbf{W} is a $p \times p$ matrix of weights whose columns are the eigenvectors of $\textbf{\text{X}}^T\textbf{\text{X}}$. Since the last components are the ones accounting for the least part of the variability, they carry almost no information from the original data matrix. Thus, it is reasonable to remove them keeping only the first components and effectively reducing the dimensionality of the data. Principal component regression then uses these first components as predictors in a linear regression model to predict the response 
+Where \textbf{W} is a $p \times p$ matrix of weights whose columns are the eigenvectors of $\textbf{\text{X}}^T\textbf{\text{X}}$. Since the last components are the ones accounting for the least part of the variability, they carry almost no information from the original data matrix. Thus, it is reasonable to remove them keeping only the first components and effectively reducing the dimensionality of the data. Principal component regression then uses these first components as predictors in a linear regression model to predict the response.
+
+Another common use of PCA is as an exploratory analysis method. Since it is very hard to represent more than three dimensions in a surface such as a sheet of paper or a screen, multidimensional data sets such as those coming from omic technologies are difficult to visualize. The dimensionality reduction produced by PCA allows for the representation of such data sets and the performing of exploratory analyses such as outlier detection, batch effect assessment, etc. \parencite{meglen1992examining}.
