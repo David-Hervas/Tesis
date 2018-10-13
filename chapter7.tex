@@ -4,7 +4,7 @@
 
 \chapter[Validation of the sparse \textit{N}-PLS method and sNPLS package]{Validation of the sparse \textit{N}-PLS method and sNPLS package}
 \label{chapter:validation}
-In order to show and assess the performance of our sparse $N$-PLS model, we performed different validations to evaluate its properties regarding prediction accuracy and variable selection capabilities in different scenarios. We also wanted to assess the usability of our package in a real-world data set analysis. For this, simulated and real data sets were used, where we also compared the performance of $N$-PLS against the performance of sparse $N$-PLS regarding predictive capability.
+In order to show and assess the performance of our sparse $N$-PLS model, we performed different validations to evaluate its properties regarding prediction accuracy and variable selection capabilities in different scenarios. We also wanted to assess the usability of our package in a real-world data set analysis. For this, simulated and real data sets were used, where we also compared the performance of $N$-PLS against the performance of sparse $N$-PLS regarding predictive capability. The following sections are based on our recent publication \parencite{hervas2018snpls} regarding the validation of the sNPLS method.
 
 
 % ---------------------------------------------------------------------
@@ -62,7 +62,7 @@ Poisson error        & 205.18           & 118.58          & \multirow{2}{*}{{[}-
 (mean=5)             & (169.3, 236.78)  & (94.83, 140.54) &                                                                           &                                                                            &                                                                             \\ \bottomrule
 \end{tabular}%
 }
-\caption{Results of the analyses performed using N-PLS and sparse N-PLS on the different simulations. Median (1\textsuperscript{st}, 3\textsuperscript{rd} quartile) of the mean squared error and a 95\% confidence interval for the difference in mean squared error between sparse $N$-PLS and $N$-PLS is also provided. True variables selected column indicates the median of the occasions these are included in the models, as well as the 1\textsuperscript{st} and 3\textsuperscript{rd} quartiles (True positives). Noise variables selected column presents analogous results for the Noise variables (False positives)}
+\caption[Results of the analyses performed using $N$-PLS and sparse $N$-PLS on the different synthetic simulations]{Results of the analyses performed using N-PLS and sparse N-PLS on the different simulations. Median (1\textsuperscript{st}, 3\textsuperscript{rd} quartile) of the mean squared error and a 95\% confidence interval for the difference in mean squared error between sparse $N$-PLS and $N$-PLS is also provided. True variables selected column indicates the median of the occasions these are included in the models, as well as the 1\textsuperscript{st} and 3\textsuperscript{rd} quartiles (True positives). Noise variables selected column presents analogous results for the Noise variables (False positives)}
 \label{table:results_synthetic}
 \end{table}
 
@@ -76,7 +76,7 @@ For our study, simulated profiles from 14 of these 21 physiological parameters w
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.7\textwidth]{figura29.png}
-\caption{Patterns for the 14 different variables in both groups: High doses (red lines) and low doses (black lines).}
+\caption[Patterns for the 14 different variables in the data driven synthetic data set]{Patterns for the 14 different variables in both groups: High doses (red lines) and low doses (black lines).}
 \label{figura29}
 \end{figure}
 
@@ -104,7 +104,7 @@ AST           & 0  & 0  & 0.221 \\
 LDH           & 0  & 0  & 0.221 \\
 GSH           & 0  & 0  & 0.101 \\ \bottomrule
 \end{tabular}%
-\caption{Coefficients of the model}
+\caption[Coefficients of the model for the data driven synthetic data set]{Coefficients of the model}
 \label{table:results_synth2}
 \end{table}
 
@@ -119,7 +119,7 @@ Simulated data sets provide a useful suitable first approach to test the perform
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.7\textwidth]{figura30.png}
-\caption{Expected patterns for the four different metabolite classes in group 1 (n=8) and group 2 (n=6).}
+\caption[Expected patterns for the four different metabolite classes in the real metabolomics data set]{Expected patterns for the four different metabolite classes in group 1 (n=8) and group 2 (n=6).}
 \label{figura30}
 \end{figure}
 
@@ -142,7 +142,7 @@ B                       & \begin{tabular}[c]{@{}c@{}}Cholic acid, Glycocholic ac
 C                       & \begin{tabular}[c]{@{}c@{}}Valine, Leucine, Isoleucine, Phenylalanine,  \\ Methionine, Cysteine, Proline, Tyrosine,\\ Aspartic acid, Alanine, Glycine, Lysine\end{tabular}                                                                                                                                         \\ \midrule
 D                       & \begin{tabular}[c]{@{}c@{}}Ornithine, Glutamate, Glutamine, Citrulline, \\ Arginine, Argininosuccinic Acid, \\ {\textgamma}-glutamyl-glutamic acid, {\textgamma}-glutamyl-glutamine, \\ {\textgamma}-glutamyl-2aminobutyric acid, ophthalmic acid\end{tabular}              \\ \bottomrule
 \end{tabular}}
-\caption{List of metabolites for each variable class. Metabolites are grouped attending to their physical and chemical properties. Class \textbf{A}, comprises fatty acid; Class \textbf{B}, comprises bile acids; Class \textbf{C}, comprises amino acids; Class \textbf{D} comprises miscellaneous compounds}
+\caption[List of metabolites for each variable class in the real metabolomics data set used for validation]{List of metabolites for each variable class. Metabolites are grouped attending to their physical and chemical properties. Class \textbf{A}, comprises fatty acid; Class \textbf{B}, comprises bile acids; Class \textbf{C}, comprises amino acids; Class \textbf{D} comprises miscellaneous compounds}
 \label{table:metabolites}
 \end{table}
 
@@ -185,7 +185,7 @@ For the interpretation of \textbf{W}\textsuperscript{K}, \autoref{figura31}E and
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.91\textwidth]{figura31.png}
-\caption{Plots of the sparse $N$-PLS model (left) and the standard $N$-PLS model (right). Score plots of the two first components in the \textbf{T} matrix (A, F); weighting plots of the \textbf{W}\textsuperscript{J} matrix (B, G); weighting plot of the \textbf{W}\textsuperscript{K} matrix (C, H); plots of the loadings of the second (D, I) and third (E, J) modes.}
+\caption[Plots of the sparse $N$-PLS model and the standard \textit{N}-PLS model]{Plots of the sparse $N$-PLS model (left) and the standard $N$-PLS model (right). Score plots of the two first components in the \textbf{T} matrix (A, F); weighting plots of the \textbf{W}\textsuperscript{J} matrix (B, G); weighting plot of the \textbf{W}\textsuperscript{K} matrix (C, H); plots of the loadings of the second (D, I) and third (E, J) modes.}
 \label{figura31}
 \end{figure}
 

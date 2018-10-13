@@ -1,7 +1,7 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
-
+\part{Research}
 \chapter[Sparse \textit{N}-PLS, a method for variable selection in multiway data sets]{Sparse \textit{N}-PLS, a method for variable selection in multiway data sets}
 
 
@@ -9,12 +9,14 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 \section{Variable selection through L1 penalization}
-As explained in \autoref{chapter:modern_techniques}, lasso applies a bias to the model fitting step of a linear or generalized linear model by shrinking all the coefficients using L1-penalization. This shrinkage reduces the complexity of the model, reducing variance and forcing some of the coefficients to be exactly zero, effectively performing variable selection at the same time as it increases predictive capacity reducing prediction error. Unfortunately the application of lasso, or its generalization elastic net, to three-way or multi-way data is not straightforward. In \autoref{chapter:threeways}, the standard $N$-PLS algorithm has been presented as an appealing technique for modelling three- or multi-way data sets when there is a response to be predicted. However, it has been exposed that, although there are some post modelling methods for estimating variable importance such as VIP \parencite{favilla2013assessing} and selectivity ratio \parencite{rajalahti2009biomarker},  it does not perform in-model variable selection, which would greatly increase its utility for analyzing metabolomic data sets. Our approach, recently published in \parencite{hervas2018sparse}, consists in applying the L1 penalization from lasso inside the $N$-PLS algorithm to be able to perform variable selection at the model-fitting step while maintaining the capability of $N$-PLS of dealing with multi-way arrays. 
+As explained in \autoref{chapter:modern_techniques}, lasso applies a bias to the model fitting step of a linear or generalized linear model by shrinking all the coefficients using L1-penalization. This shrinkage reduces the complexity of the model, reducing variance and forcing some of the coefficients to be exactly zero, effectively performing variable selection at the same time as it increases predictive capacity reducing prediction error. Unfortunately the application of lasso, or its generalization elastic net, to three-way or multi-way data is not straightforward. The only approximations of these techniques for dealing with three-way data have been based on unfolding of the \textbf{\underline{X}} array \parencite{chiu2013multiway}. 
+
+In \autoref{chapter:threeways}, the standard $N$-PLS algorithm has been presented as an appealing technique for modelling three- or multi-way data sets when there is a response to be predicted. However, it has been exposed that, although there are some post modelling methods for estimating variable importance such as VIP \parencite{favilla2013assessing} and selectivity ratio \parencite{rajalahti2009biomarker},  it does not perform in-model variable selection, which would greatly increase its utility for analyzing metabolomic data sets. Our approach, recently published in \parencite{hervas2018sparse}, consists in applying the L1 penalization from lasso inside the $N$-PLS algorithm to be able to perform variable selection at the model-fitting step while maintaining the capability of $N$-PLS of dealing with multi-way arrays. 
 
 For this, we propose using the soft-thresholding operator which can be derived from the lasso problem as follows:
 \vspace{15pt}
 \begin{enumerate}
-    \item Assuming \textbf{X} (matrizied version of \textbf{\underline{X}} is composed of orthogonal columns, the least squares solution is
+    \item Assuming \textbf{X} (matrizied version of \textbf{\underline{X}}) is composed of orthogonal columns, the least squares solution is
     
     \begin{equation}
         \hat{\beta}^{LS}=(X^TX)^{-1}X^Ty=X^Ty
@@ -77,7 +79,7 @@ The soft-thresholding operator is well known in signal processing and image anal
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.6\textwidth]{figura28.png}
-\caption{Soft-thresholding function in the range x = [-10, 10] with a threshold $\lambda$ of 3. Values with $|x|$ higher than $\lambda$ have the threshold value substracted and values with $|x|$ equal or less than $\lambda$ are set to zero. Black dashed line represents the original values and red line represents the thresholded values.}
+\caption[Soft-thresholding function]{Soft-thresholding function in the range x = [-10, 10] with a threshold $\lambda$ of 3. Values with $|x|$ higher than $\lambda$ have the threshold value substracted and values with $|x|$ equal or less than $\lambda$ are set to zero. Black dashed line represents the original values and red line represents the thresholded values.}
 \label{figura28}
 \end{figure}
 
@@ -116,7 +118,7 @@ This algorithm is applicable to both the standard regression (continuous respons
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=1\textwidth]{figura40.png}
-\caption{Scheme detailing the different steps of the sNPLS algorithm as explained in the previous page. \vspace{15pt}}
+\caption[Scheme detailing the different steps of the sNPLS algorithm]{Scheme detailing the different steps of the sNPLS algorithm as explained in the previous page. \vspace{15pt}}
 \label{figura40}
 \end{figure}
 
@@ -149,7 +151,7 @@ A scheme of the procedure for K-fold cross-validation is represented in \autoref
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.7\textwidth]{figura39.png}
-\caption{Scheme of a K-fold cross-validation procedure. At each iteration, one different fold acts as test fold while all the others act as training folds. At the end, the different prediction errors are averaged.}
+\caption[Scheme of a K-fold cross-validation procedure]{Scheme of a K-fold cross-validation procedure. At each iteration, one different fold acts as test fold while all the others act as training folds. At the end, the different prediction errors are averaged.}
 \label{figura39}
 \end{figure}
 

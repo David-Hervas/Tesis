@@ -9,7 +9,7 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 \section{From 2D matrices to 3D arrays}
-In most fields, data sets are usually represented by two dimensional matrices, where the rows are the observations and the columns are the different variables ($I \times J$). But in metabolomics, and in general in many other omic sciences, sometimes these $I \times J$ data sets can be expanded by taking for example, repeated measurements at different $K$ time points for each observation and producing a three-dimensional data structure ($I \times J \times K$) called three-way array (\autoref{figura27}) or, more generally, a multidimensional data structure called multi-way array. Most of the modelling methods that have been explained in \autoref{chapter:modern_techniques} are not able of dealing with such data structures, which raise many methodological complications to the analyses. Therefore, different three-way or multi-way specific methods have been developed during the last decades to deal with this sort of data.
+In most fields, data sets are usually represented by two dimensional matrices, where the rows are the observations and the columns are the different variables ($I \times J$). But in metabolomics, and in general in many other omic sciences, sometimes these $I \times J$ data sets can be expanded by taking for example, repeated measurements at different $K$ time points for each observation and producing a three-dimensional data structure ($I \times J \times K$) called three-way array (\autoref{figura27}) or, more generally, a multidimensional data structure called multi-way array \parencite{kroonenberg2016my}. Most of the modelling methods that have been explained in \autoref{chapter:modern_techniques} are not able of dealing with such data structures, which raise many methodological complications to the analyses. Therefore, different three-way or multi-way specific methods have been developed during the last decades to deal with this sort of data.
 
 \begin{figure}[hbtp]
 \centering
@@ -20,12 +20,12 @@ In most fields, data sets are usually represented by two dimensional matrices, w
 
 \section{Exploration and description of N-way arrays}
 \subsection{Unfolding}
-One of the straightforward solutions for dealing with $N$-way arrays is performing an unfolding of the array into a two-dimensional matrix. This unfolding is performed by regrouping the elements of the higher order modes by extending the dimension of the second mode, as showed in \autoref{figura35}. After the unfolding, all statistical methods valid for two-dimensional matrices are applicable to the new structure, although the tridimensional structure of the data is lost, so there is a potential loss of information.
+One of the straightforward solutions for dealing with $N$-way arrays is performing an unfolding of the array into a two-dimensional matrix. This unfolding is performed by regrouping the elements of the higher order modes by extending the dimension of the second mode, as showed in \autoref{figura35}. After the unfolding, all statistical methods valid for two-dimensional matrices are applicable to the new structure, although the tridimensional structure of the data is lost, leading to a list of potential issues such as more complex models (too many parameters), loss of predictive power, loss of the multi-way information and greater difficulty in the interpretation of results.
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.95\textwidth]{figura35.png}
-\caption{Unfolding of a three-way array ($I \times J \times K$) into a two-dimensional matrix ($I \times JK$).}
+\caption[Unfolding of a three-way array into a two-dimensional matrix]{Unfolding of a three-way array ($I \times J \times K$) into a two-dimensional matrix ($I \times JK$).}
 \label{figura35}
 \end{figure}
 
@@ -42,7 +42,7 @@ x_{ijk}=\sum\limits_{l=1}^{w_1} \sum\limits_{m=1}^{w_2} \sum\limits_{n=1}^{w_3}a
 \label{equation17}
 \end{equation}
 
-If the Kronecker product is used, defined as $\otimes$, unfolding the \textbf{\underline{X}} array, the \textbf{\underline{G}} core and the residuals \textbf{\underline{E}} into matrices \textbf{X}, \textbf{G} and \textbf{E} by fixing the first mode, athe matrix expression of the model is as follows (\autoref{equation18}):
+If the Kronecker product is used, defined as $\otimes$, unfolding the \textbf{\underline{X}} array, the \textbf{\underline{G}} core and the residuals \textbf{\underline{E}} into matrices \textbf{X}, \textbf{G} and \textbf{E} by fixing the first mode, the matrix expression of the model is as follows (\autoref{equation18}):
 
 \begin{equation}
 \textbf{\text{X}}=\textbf{\text{AG}}(\textbf{\text{C}}^T\otimes \textbf{\text{B}}^T)+\textbf{\text{E}}
@@ -54,20 +54,20 @@ where \textbf{A} is the loadings matrix corresponding to the first mode, \textbf
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.85\textwidth]{figura34.png}
-\caption{Scheme of the Tucker3 model. The model consists on a weighted sum of outer products between the different factors stored in matrices \textbf{A}, \textbf{B} and \textbf{C}.}
+\caption[Scheme of the Tucker3 model]{Scheme of the Tucker3 model. The model consists on a weighted sum of outer products between the different factors stored in matrices \textbf{A}, \textbf{B} and \textbf{C}.}
 \label{figura34}
 \end{figure}
 
 Of note, the compression performed by the model can be applied also to the first mode. This way, the \textbf{\underline{G}} core can be considered as an approximation to \textbf{\underline{X}}, which approximates the original array by the three matrices \textbf{A}, \textbf{B} and \textbf{C}.
 
-It is important to take into account that the model has not a unique solution, because it has rotational freedom. In fact, the model can be so redundant that many elements of \textbf{\underline{G}} can be set to zero without altering the fit of the model, thus meaning they are associated to noise.
+It is important to take into account that the model has not a unique solution, because it has rotational freedom. In fact, the model can be so redundant that many elements of \textbf{\underline{G}} can be set to zero without altering the fit of the model, thus meaning they are associated to noise \parencite{montalban2005control}.
 
 \subsection{PARAFAC}
 The PARAFAC method is also a decomposition method for multi-way arrays. It can be derived from the Tucker 3 model by imposing superdiagonallity and identity in the structure of the \textbf{\underline{G}} core. Essentially, it is a generalization of PCA to three- or multi-way data structures \parencite{bro1997parafac}. The method was first developed by \textcite{harshman1970foundations} and \textcite{carroll1970analysis}, who named the method as CANDECOMP. In this method, the decomposition of the data is made into trilinear components, with each component consisting of one score vector and two loading vectors. The general structure of the PARAFAC model is presented in \autoref{figura36}.
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[width=0.85\textwidth]{figura36.png}
+\includegraphics[width=0.9\textwidth]{figura36.png}
 \caption{General structure of a PARAFAC model.}
 \label{figura36}
 \end{figure}
@@ -92,7 +92,7 @@ The main advantage of PARAFAC over Tucker3 models is the impossibility of altern
 
 \section{Regression methods for \textit{N}-way arrays, \textit{N}-PLS}
 \label{NPLSregression}
-The $N$-PLS model is an extension of the standard PLS model to multi-way arrays based in the decomposition performed by the PARAFAC model. It's aim is studying relationships between some three-way (or N-way) \textbf{\underline{X}} (e.g. I x J x K) data structure and any \textbf{\underline{Y}} (e.g. I x L x M) data structure by maximizing the covariance between \textbf{\underline{X}} and \textbf{\underline{Y}} data arrays. For achieving this, a multilinear model is fitted simultaneously to the \textbf{\underline{X}} and the \textbf{\underline{Y}} arrays with a regression model relating the two together. The structure of the $N$-PLS model is presented in \autoref{figura38}.
+The $N$-PLS model is an extension of the standard PLS model to multi-way arrays based in the decomposition performed by the PARAFAC model \parencite{bro1996multiway}. It's aim is studying relationships between some three-way (or N-way) \textbf{\underline{X}} (e.g. $I \times J \times K$) data structure and any \textbf{\underline{Y}} (e.g. $I \times L \times M$) data structure by maximizing the covariance between \textbf{\underline{X}} and \textbf{\underline{Y}} data arrays. For achieving this, a multilinear model is fitted simultaneously to the \textbf{\underline{X}} and the \textbf{\underline{Y}} arrays with a regression model relating the two together. The structure of the $N$-PLS model is presented in \autoref{figura38}.
 
 \begin{figure}[hbtp]
 \centering
@@ -161,7 +161,7 @@ SSY_{tot.expl.}=\textbf{\text{b}}^2\textbf{\text{T}}^T\textbf{\text{T}}
 \label{equation22}
 \end{equation}
 
-where \textbf{T} is the score matrix and \textbf{b} are the PLS coefficients. Following this, VIP values for each variable can be computed using the PLS weight $w_{jf}$ based on how much of \textbf{y} is explained in each latent variable. It is considered that VIP values greater than one have an above average influence and should be considered as relevant variables in explaining \textbf{Y}.
+where \textbf{T} is the score matrix and \textbf{b} are the PLS coefficients. Following this, VIP values for each variable can be computed using the PLS weight $w_{jf}$ based on how much of \textbf{y} is explained in each latent variable. It is considered that VIP values greater than one have an above average influence and should be considered as relevant variables in explaining \textbf{Y}, although the limit is arbitrary and can be modified depending on the requirements of the study \parencite{akarachantachote2014cutoff}.
 
 In their work, \textcite{favilla2013assessing}, expanded the applicability of the VIP scores to the three-way case as follows:
 
@@ -225,8 +225,59 @@ An example of the VIP score computation results on a PLS analysis is provided in
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.65\textwidth]{figura41.pdf}
-\caption{Plot of the VIP scores from the different variables in a PLS model. The dashed red line marks the VIP=1 threshold.}
+\caption[Plot of the VIP scores from the different variables in a PLS model]{Plot of the VIP scores from the different variables in a PLS model. The dashed red line marks the VIP=1 threshold.}
 \label{figura41}
 \end{figure}
 
 \subsubsection{Selectivity Ratio}
+In the majority of cases, several components are needed to adequately fit a model for a specific response \textbf{y}. By using the \textbf{y} vector as a target, it is possible to transform the PLS components to obtain a single predictive target-projected component, which is analogous to the predictive component in orthogonal partial least squares \parencite{bylesjo2006opls}. The selectivity ratio is estimated by calculating the ratio between explained and residual variance of the variables on that target-projected component \parencite{rajalahti2009biomarker}. Briefly, by selecting the normalized regression coefficients as PLS weights
+
+\begin{equation}
+\textbf{\text{w}}_{TP}=\textbf{\text{b}}_{PLS}/\|\textbf{\text{b}}_{PLS}\|
+\label{equation30}
+\end{equation}
+
+and calculating target-projected scores by projection on the matrix of variables
+
+\begin{equation}
+\textbf{\text{t}}_{TP}=\textbf{\text{Xw}}_{TP}=\textbf{\text{Xb}}_{PLS}/\|\textbf{\text{b}}_{PLS}\|=\hat{\textbf{\text{y}}}/\|\textbf{\text{b}}_{PLS}\|
+\label{equation31}
+\end{equation}
+
+it is showed that the target-projected scores are proportional to the vector of predicted responses.
+
+The target-projected loadings can be calculated as
+
+\begin{equation}
+\textbf{\text{p}}^T_{TP}=\textbf{\text{t}}^T_{TP}\textbf{\text{X}}/(\textbf{\text{t}}^T_{TP}\textbf{\text{t}}_TP)=\textbf{\text{b}}^T_{PLS}/\|\textbf{\text{b}}_{PLS}\|*(\textbf{\text{X}}^T\textbf{\text{X}})/\|\textbf{\text{t}}_{TP}\|^2
+\label{equation32}
+\end{equation}
+
+This shows that the target-projected loadings are the product of the normalized regression coefficients and the covariance matrix of the variables scaled by the inverse of the variance of the target-projected scores. So the target-projected loading vector combines the predictive ability of a variable with its explanatory power.
+
+The target projection model can then be expressed as
+
+\begin{equation}
+\textbf{\text{X}}=\textbf{\text{X}}_{TP}+\textbf{\text{E}}_{TP}=\textbf{\text{t}}_{TP}\textbf{\text{p}}^T_{TP}+\textbf{\text{E}}_{TP}
+\label{equation33}
+\end{equation}
+
+From here, explained and residual variance ($v_{expl,i}$ and $v_{res,i}$ can be computed for each variable $i$. Then the selectivity ratio is obtained by dividing explained and residual variance as follows
+
+\begin{equation}
+SR_i=v_{expl,1}/v_{res,i}, \ i=1,2,3 \dots
+\label{equation34}
+\end{equation}
+
+As with the case of VIP scores and any other ranking method, the limit or threshold of SR value for considering a variable as relevant is arbitrary. Nevertheless, the authors of the original paper considered a 75\% of explained variance, corresponding to a SR of three, a reasonable threshold for selecting variables as relevant in predicting \textbf{y}.
+
+An example of the SR computation results on the same PLS analysis presented in \autoref{figura41} for VIP scores is provided in \autoref{figura42}. It can be seen that conclusions from this method regarding relevant variables are coincident with those obtained using the VIP scores methods, so there is good agreement between both methods. There is only a slight disagreement regarding the first three variables, which are selected by the VIP scores methods and discarded by the selectivity ratio when using the standard threshold values for both methods.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[width=0.65\textwidth]{figura42.pdf}
+\caption[Plot of the SR from the different variables in a PLS model]{Plot of the SR from the different variables in a PLS model. The dashed red line marks the SR=3 threshold.}
+\label{figura42}
+\end{figure}
+
+As of today. there are no published studies comparing the use of both methods in a comprehensive set of different data sets for the three-way case. However, a study of \textcite{farres2015comparison} compared both methods regarding variable selection performance and prediction capability in different two-way data sets. This study concluded that, for most data sets, the SR method selected fewer variables than the VIP method. In many cases, some of the variables selected by the VIP method were false positive candidates and some of the variables not selected by the SR were false negative candidates. Regarding prediction accuracy, each method was better that the other in a similar number of data sets, so final decision about the best of the two approaches should be based on the aims of the specific study being performed. 

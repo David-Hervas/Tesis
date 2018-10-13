@@ -1,12 +1,47 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
-
-\chapter[Conclusions]{Conclusions}
-
-
+\part{Conclussions, discussion and future work}
+\chapter[Conclusions]{Conclusions and future work}
 
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
-\section{Discussion}
-\section{Future work}
+\section{Developed topics and contributions}
+This thesis has covered the issues and difficulties in analyzing metabolomic data and the different techniques able to deal with those problems. A special focus has been given to the treatment and analysis of three-way and, by extension, multi-way data sets and the development and implementation of a variable selection procedure integrated at the model-fitting step.
+
+First, a review of the properties and particularities of 'omic' data and, more specifically, of metabolomic data was performed. The main characteristics of these data are their multicollinearity, the large number of variables and their organization in complex data structures. There are a wide range of methods available for analyzing metabolomic data sets. In this thesis, many of these techniques have been presented and explained; after a review of the classical statistical methods, such as univariate tests, were their limitations have been exposed, we have assessed the usefulness of PCA, PLS, ridge regression, lasso, elastic net, random forest and boosting for the analysis of metabolomic data. After this, we have focused on complex data structures such as three-way or multi-way arrays and the tools for their analysis regarding compression methods such as Tucker3 and PARAFAC and also predictive modelling methods such as $N$-PLS.
+
+A new method for combining the $N$-PLS algorithm with L1-penalization has been developed. This method is applied at the determination of the $\textbf{\text{w}}^J$ and $\textbf{\text{w}}^K$ to achieve sparse versions of the latent variables and effectively perform variable selection at the model fitting step. The penalization of both vectors, $\textbf{\text{w}}^J$ and $\textbf{\text{w}}^K$, achieves not only variable selection on the second mode ($J$), but also on the third mode ($K$). Related to the variable selection, this method allows for the construction of simpler models than standard $N$-PLS. This makes the models more interpretable and less prone to overfitting.
+
+The new developed method sNPLS has been implemented in an R package called \texttt{sNPLS}. This package includes not only the main sNPLS algorithm but also a complete set of functions for fitting predictive models with three-way data structures, including parallelized cross-validation and repeated cross-validation procedures, processing of the data such as centering, scaling and unfolding and a wide array of plots for interpretation of the modelling results. Additionally, this is the only package for performing $N$-PLS regression models in \texttt{R}, so with its development we have expanded the applicability of three-way methods to the \texttt{R} user community.
+
+The method and its implementation in \texttt{R} has also been validated using synthetic simulations and real data sets, showing lower prediction error than standard $N$-PLS and good performance in variable selection. The method has also been validated for the case of high multicollinearity between variables, proving that the combination of L1-penalization and $N$-PLS projection behaves similarly to elastic net, being able to select all correlated variables instead of discarding most of them and selecting only one as happens with lasso. 
+
+Additionally, we have compared the variable selection performance of sNPLS to other methods such as VIP scores and SR, obtaining similar results with the three methods, with any of them being superior to the other two in some cases and inferior in other cases.
+
+\section{Future work and research lines}
+The development of a new method for performing variable selection at the model-fitting step in $N$-PLS and its software implementation as an \texttt{R} package has opened a large range of research lines that should be explored in the future. These research lines can be framed in three different categories: methodological developments, software development and practical application of the method to real problems in biomedical research.
+
+Regarding methodological developments, future research lines include:
+
+\begin{enumerate}
+    \item Study of other possible penalizations such as L0 or adaptive L1 penalization. The field of penalized regression methods is a very active research branch. Since our method is a combination of a projection based method with a penalization method, advances both fields could be incorporated into our technique. Adaptive L1 penalization is specially appealing for its oracle properties \parencite{zou2006adaptive}.
+    \item Development of alternative methods for the selection and/or tuning of the hyperparameter space. Using $RMSE$ for the tuning of the hyperparameters results in a theoretically optimal prediction error performance at a cost of non-optimal variable selection performance. Finding an appropriate criterion for achieving optimal variable selection performance would greatly increase the flexibility and utility of the method.
+    \item Derivation of standard errors and confidence intervals for sNPLS to further improve the inference capabilities of the method.
+\end{enumerate}
+\vspace{10pt}
+In the case of software development, the proposed future research lines include:
+
+\begin{enumerate}
+    \item Improvement of the \texttt{sNPLS} \texttt{R} package as exposed in \autoref{packagedev}. This includes adding all the functionality developed by the methodological research lines, but also improving the efficiency of the computations and adding more data processing options and plots.
+    \item Developing an alternative to the search grid method. Random search is one candidate, but other options should be studied such as gradient search or genetic algorithms.
+    \item Study the impact of the use of different BLAS libraries on the performance of the package and implement optimizations in the algorithm based on this results.
+\end{enumerate}
+\vspace{10pt}
+Finally, regarding practical application of the method to real biomedical problems, the potential number of research lines is immense, so a generic sample is provided:
+
+\begin{enumerate}
+    \item Application of the sNPLS method to biomarkers search in longitudinal studies.
+    \item Development of prediction models for outcome in repeated measures studies.
+    \item Use of the sNPLS method for the understanding of complex biological systems
+\end{enumerate}

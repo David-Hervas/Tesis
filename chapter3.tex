@@ -14,7 +14,7 @@ In the previous chapter, the projection technique known as PCA has been introduc
 
 \begin{figure}[htbp]\centering
 		\includegraphics[width=.6\textwidth]{figura02}
-		\caption{Variables with less variability can be the ones related to the response, thus being infrarepresented in the first components of PCA. In this example, if we wanted to predict the amount of shadow dropped by the tree, the PCA projection would not be efficient, while the other presented projection fully captures our target prediction. On the other hand, the PCA projection makes the tree fully recognizable, while the other projection makes it hard to even guess there is a tree.}
+		\caption[Differences between PCA and PLS]{Variables with less variability can be the ones related to the response, thus being infrarepresented in the first components of PCA. In this example, if we wanted to predict the amount of shadow dropped by the tree, the PCA projection would not be efficient, while the other presented projection fully captures our target prediction. On the other hand, the PCA projection makes the tree fully recognizable, while the other projection makes it hard to even guess there is a tree.}
 		\label{figura02}
 	\end{figure}
 
@@ -27,7 +27,7 @@ A scheme of the PLS model is depicted in \autoref{figura17}.
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.7\textwidth]{figura17.png}
-\caption{Scheme of the PLS model \parencite{wold2001pls}. \textbf{X} is the matrix of predictors and \textbf{Y} is the matrix of responses. Additional matrices are generated at the different modelling steps.}
+\caption[Scheme of the PLS model]{Scheme of the PLS model \parencite{wold2001pls}. \textbf{X} is the matrix of predictors and \textbf{Y} is the matrix of responses. Additional matrices are generated at the different modelling steps.}
 \label{figura17}
 \end{figure}
 
@@ -73,7 +73,7 @@ With PLS, we have introduced a modelling technique able to effectively deal with
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.82\textwidth]{figura18.png}
-\caption{Plots of a PLS model. \textbf{A} shows the loadings for each variable in the two first components. \textbf{B} shows the scores for each observation in the first two components. \textbf{C} represents the correlations between each variable and the first two components.  \textbf{D} shows the regression coefficients of the model.}
+\caption[Plots of a PLS model]{Plots of a PLS model. \textbf{A} shows the loadings for each variable in the two first components. \textbf{B} shows the scores for each observation in the first two components. \textbf{C} represents the correlations between each variable and the first two components.  \textbf{D} shows the regression coefficients of the model.}
 \label{figura18}
 \end{figure}
 
@@ -94,7 +94,7 @@ As previously described, metabolomic data sets are characterized by having a lar
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.75\textwidth]{figura20.png}
-\caption{In both targets each black cross represents an estimation of a specific model to different samples of the same population and the orange dot represents the average estimation of all of them. In the left target there is no bias, with the orange dot right at the bullseye, but estimation from the different samples are wildly spread with a very high variability. In the right target, there is a perceptible amount of bias, the orange dot lies out of the bullseye, but all estimations from the different samples are concentrated in a small area around the average estimation. Usually, only one sample (one data set) is available for performing the estimation, so the advantage of introducing bias to lower variance is evident.}
+\caption[No bias / high variance vs. Bias / low variance situation]{In both targets each black cross represents an estimation of a specific model to different samples of the same population and the orange dot represents the average estimation of all of them. In the left target there is no bias, with the orange dot right at the bullseye, but estimation from the different samples are wildly spread with a very high variability. In the right target, there is a perceptible amount of bias, the orange dot lies out of the bullseye, but all estimations from the different samples are concentrated in a small area around the average estimation. Usually, only one sample (one data set) is available for performing the estimation, so the advantage of introducing bias to lower variance is evident.}
 \label{figura20}
 \end{figure}
 
@@ -114,7 +114,7 @@ The inclusion of this restriction to the ordinary least squares problem imposes 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.6\textwidth]{figura21.png}
-\caption{Ridge regression for a linear model with two predictors. As the restriction is intensified (lower value of $s$), the estimation of the coefficients is more biased to zero. Dashed red lines represent least squares contour lines. Grayed area represents the restriction imposed by $s$.}
+\caption[Ridge regression for a linear model with two predictors]{Ridge regression for a linear model with two predictors. As the restriction is intensified (lower value of $s$), the estimation of the coefficients is more biased to zero. Dashed red lines represent least squares contour lines. Grayed area represents the restriction imposed by $s$.}
 \label{figura21}
 \end{figure}
 
@@ -137,7 +137,7 @@ In many studies it is the case that it is not only of interest fitting a predict
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.6\textwidth]{figura22.png}
-\caption{Lasso regression for a linear model with two predictors. As the restriction is intensified (lower value of $s$), the estimation of the coefficients is more biased to zero. Since it is more easier to land in a vertex than in an edge, reducing $s$ forces one of the coefficients to zero. Dashed red lines represent least squares contour lines. Grayed area represents the restriction imposed by $s$.}
+\caption[Lasso regression for a linear model with two predictors]{Lasso regression for a linear model with two predictors. As the restriction is intensified (lower value of $s$), the estimation of the coefficients is more biased to zero. Since it is more easier to land in a vertex than in an edge, reducing $s$ forces one of the coefficients to zero. Dashed red lines represent least squares contour lines. Grayed area represents the restriction imposed by $s$.}
 \label{figura22}
 \end{figure}
 
@@ -156,20 +156,22 @@ Two different penalization methods have been presented, each one with its own be
 
 \autoref{figura23} depicts the elastic net in a two-variable case and shows how, while keeping the vertices present in lasso, the edges are convex and allow for grouped selection of correlated variables. This is a very attractive solution for the modelling of metabolomic data sets and has been used widely during the last years \parencite{lankinen2010dietary, bowling2014analyzing, liu2015high, ferrario2016mortality}. The only drawback of elastic net compared to lasso and ridge is the inclusion of another parameter in the model. Instead of optimizing only for the value of $s$, elastic net models have also to optimize for the value of $\alpha$, thus requiring more tuning for an appropriate fitting of the data. 
 
+Penalization methods have been used by the author of this thesis for the analysis of different 'omic' data sets with very positive results \parencite{yanez2015two, gonzalez2017prognostic, 10.1371/journal.pone.0202926}.
+
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.6\textwidth]{figura23.png}
-\caption{Elastic net regression for a linear model with two predictors. As the restriction is intensified (lower value of $s$), the estimation of the coefficients is more biased to zero. As in lasso, it is more easier to land in a vertex than in an edge, so many coefficients can be potentially set to zero. But, as in ridge, edges are convex, so highly correlated variables will be selected together. Dashed red lines represent least squares contour lines. Grayed area represents the restriction imposed by $s$.}
+\caption[Elastic net regression for a linear model with two predictors]{Elastic net regression for a linear model with two predictors. As the restriction is intensified (lower value of $s$), the estimation of the coefficients is more biased to zero. As in lasso, it is more easier to land in a vertex than in an edge, so many coefficients can be potentially set to zero. But, as in ridge, edges are convex, so highly correlated variables will be selected together. Dashed red lines represent least squares contour lines. Grayed area represents the restriction imposed by $s$.}
 \label{figura23}
 \end{figure}
 
 \section{Tree-based methods}
-Projection based methods and penalization methods are extensions of the standard linear model and can also be extended to generalized linear models and survival models without much effort \parencite{nygaard2008partial, simon2011regularization}. But, in essence, they are parametric models, which means that they are sensitive to outliers \parencite{liebmann2010robust, park2016robust} and that they are limited in the types of relationships among variables they can detect. Their validity is also dependent on assumptions that can or cannot be met depending on the population being analyzed. In contrast, tree-based methods are fully non-parametric methods, so they do not have underlying assumptions to be met. They were developed from an algorithmic perspective instead of from an statistical theory perspective, so many of their statistical theoretical foundations where elaborated after their development as data analysis techniques, instead of before, as is usual with most statistical methods \parencite{breiman2001statistical}. The main difference between these two approaches lies in the interpretation of the data generating process. In one case, the data is assumed to be generated by a stochastic data model which we reproduce and use to make the analysis, in the other case the data generating process is treated as unknown and algorithms are generated based in their prediction capability (\autoref{figura24}).
+Projection based methods and penalization methods are extensions of the standard linear model and can also be extended to generalized linear models and survival models without much effort \parencite{nygaard2008partial, simon2011regularization}. But, in essence, they are parametric models, which means that they are sensitive to outliers \parencite{liebmann2010robust, park2016robust} and that they are limited in the types of relationships among variables they can detect. Their validity is also dependent on assumptions that can or cannot be met depending on the population being analyzed. In contrast, tree-based methods are fully non-parametric methods, so they do not have underlying assumptions to be met \parencite{timofeev2004classification}. They were developed from an algorithmic perspective instead of from an statistical theory perspective, so many of their statistical theoretical foundations where elaborated after their development as data analysis techniques, instead of before, as is usual with most statistical methods \parencite{breiman2001statistical}. The main difference between these two approaches lies in the interpretation of the data generating process. In one case, the data is assumed to be generated by a stochastic data model which we reproduce and use to make the analysis, in the other case the data generating process is treated as unknown and algorithms are generated based in their prediction capability (\autoref{figura24}).
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.9\textwidth]{figura24.png}
-\caption{Differences between methods based on assumptions (left) and methods based on predictive capability (right).}
+\caption[Differences between methods based on assumptions and methods based on predictive capability]{Differences between methods based on assumptions (left) and methods based on predictive capability (right).}
 \label{figura24}
 \end{figure}
 
@@ -180,26 +182,26 @@ Regression and classification trees, also known as decision trees are one of the
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.9\textwidth]{figura25.png}
-\caption{Classification tree for predicting relapse in breast cancer patients. Starting from the top one, each node tests a boolean condition which determines the direction of the next node to test until a terminal node is reached and a prediction is made.}
+\caption[Classification tree for predicting relapse in breast cancer patients]{Classification tree for predicting relapse in breast cancer patients. Starting from the top one, each node tests a boolean condition which determines the direction of the next node to test until a terminal node is reached and a prediction is made.}
 \label{figura25}
 \end{figure}
 
 \subsection{Random forests}
 As explained in \autoref{decisiontrees}, single trees are not able to achieve a reasonable balance between bias and variance when adjusting the model. The method known as random forest \parencite{breiman2001random} is inspired in the reasoning behind what was already exposed in \autoref{figura20} of \autoref{penalmethods}. In that figure, there are two targets, the first one corresponding to a zero bias / high variance situation and the second one corresponding to a moderate bias / low variance situation. Since only one sample is usually available (corresponding to just one shot at the target), it is more reasonable to use the moderate bias / low variance target. However, if we had a sufficient amount of large enough samples and could fit one model to each sample, the zero bias / high variance situation would be the best, since averaging the different models would reduce variance and maintain the low bias. This is how random forest works. It creates different instances of the data set using bootstrap resampling \parencite{efron1994introduction} and trains one deep (complex) decision tree to each instance. Each individual tree has small bias and high variance (complex model). But combination of the different trees produces a dramatical reduction in variance. Since bootstrap samples are correlated, predictor variables are selected at random at each node in each tree to make the models fitted to the different samples more diverse. When performing a prediction, the results of each tree are combined into a single outcome by voting. 
 
-Random forests are among the best methods for predictive modelling, being immune to almost all of the problems commented for the other introduced methods and having very competitive error rates in almost all situations \parencite{fernandez2014we}. Their only drawbacks for its use when analyzing metabolomic data are that they are not easily interpretable and that they do not strictly provide variable selection, although they provide variable importance measures \parencite{archer2008empirical}.
+Random forests are among the best methods for predictive modelling, being immune to almost all of the problems commented for the other introduced methods and having very competitive error rates in almost all situations \parencite{fernandez2014we}. Their only drawbacks for its use when analyzing metabolomic data are that they are not easily interpretable and that they do not strictly provide variable selection, although they provide variable importance measures \parencite{archer2008empirical}. As with the case of penalization methods, the author of this thesis has successfully applied the random forest algorithm to different studies \parencite{frasson2015risk, garcia2018circulating}. 
 
 \subsection{Boosting}
 As random forest, boosting consists in combining different decision trees to improve prediction accuracy. But, instead of reducing variance like random forest, boosting combines small trees (or any other weak learner) to reduce bias \parencite{freund1996experiments}. The different resampled data sets are generated also differently. In the case of boosting, data sets are generated sequentially in an iterative way. \autoref{figura26} depicts a scheme of how boosting works.
 
+Beginning from an unweighted data set, the first tree is fitted and a new data set will be generated where observations that were mispredicted will appear more frequently than observations correctly predicted. This way, next model will learn from the mistakes of the previous one, improving prediction error. After this, a new data set will be produced where the mispredicted observations from the second model will be overrepresented compared to the correctly predicted observations. This steps will be repeated until the error rate is low enough. Predictions of the model are estimated using weighted voting based on their accuracy. As random forest, boosting is among the best methods for predictive modelling regarding prediction accuracy, but it suffers from the same issues as random forest regarding interpretability and variable selection \parencite{auret2011empirical}.
+\vspace{10pt}
 \begin{figure}[hbtp]
 \centering
 \includegraphics[width=0.85\textwidth]{figura26.png}
-\caption{Representation of the boosting algorithm. Each time a model is fitted, a new weighted sample is generated based on the results of the model.}
+\caption[Representation of the boosting algorithm]{Representation of the boosting algorithm. Each time a model is fitted, a new weighted sample is generated based on the results of the model.}
 \label{figura26}
 \end{figure}
-
-Beginning from an unweighted data set, the first tree is fitted and a new data set will be generated where observations that were mispredicted will appear more frequently than observations correctly predicted. This way, next model will learn from the mistakes of the previous one, improving prediction error. After this, a new data set will be produced where the mispredicted observations from the second model will be overrepresented compared to the correctly predicted observations. This steps will be repeated until the error rate is low enough. Predictions of the model are estimated using weighted voting based on their accuracy. As random forest, boosting is among the best methods for predictive modelling regarding prediction accuracy, but it suffers from the same issues as random forest regarding interpretability and variable selection \parencite{auret2011empirical}.
 
 \section{Other methods}
 Although projection, penalization and tree-based methods have been covered in detail, there are other methods worth mentioning when thinking about dealing with metabolomic data sets. Among them stand out neural networks \parencite{dayhoff2001artificial}, which are highly parametrized models inspired by the functioning of the human brain, support vector machines \parencite{mahadevan2008analysis} based on kernel methods, and bayesian networks \parencite{bartel2013statistical}.
