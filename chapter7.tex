@@ -184,7 +184,7 @@ For the interpretation of \textbf{W}\textsuperscript{K}, \autoref{figura31}E and
 
 \begin{figure}[hbtp]
 	\centering
-\includegraphics[width=0.91\textwidth]{figura31.png}
+\includegraphics[width=0.78\textwidth]{figura31.png}
 \caption[Plots of the sparse $N$-PLS model and the standard \textit{N}-PLS model]{Plots of the sparse $N$-PLS model (left) and the standard $N$-PLS model (right). Score plots of the two first components in the \textbf{T} matrix (A, F); weighting plots of the \textbf{W}\textsuperscript{J} matrix (B, G); weighting plot of the \textbf{W}\textsuperscript{K} matrix (C, H); plots of the loadings of the second (D, I) and third (E, J) modes.}
 \label{figura31}
 \end{figure}
@@ -192,4 +192,75 @@ For the interpretation of \textbf{W}\textsuperscript{K}, \autoref{figura31}E and
 \section{Comparison with other methods}
 As exposed in \autoref{chapter:threeways}, although $N$-PLS does not provide variable selection at the model fitting step, some methods have been developed to perform variable selection after the fitting of the model. Variable Importance in Projection (VIP) scores \parencite{favilla2013assessing} and Selectivity Ratio \parencite{rajalahti2009biomarker} have been used successfully in different studies \parencite{favilla2014ranking, mostafapour2015n, yun2016variable}.
 
-To better get a view of the similarities and differences between our method and the VIP scores and Selectivity Ratio methods, we re-analyzed the real data set presented in \autoref{sec:realdata} with both of them and compared their results with the results presented for sNPLS.
+\subsection{The hepatic toxicity data set}
+To better get a view of the similarities and differences between our method and the VIP scores and Selectivity Ratio methods, we analyzed a biological data set using the three methods and compared their results. This data set consisted on measures of eight different toxicity parameters at four different time points in samples of hepatic cells treated with fifteen different drugs at three different concentrations. A scheme of the structure of the data is depicted in \autoref{figura43}. A complete description of the data set can be found in \textcite{tolosa2018long}. 
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.75\textwidth]{figura43.png}
+\caption[Structure of the toxicity outcomes data set]{Structure of the toxicity outcomes data set. It is organized as a three-way array, with 42 samples ($I$), 8 variables ($K$) and 4 time points ($K$). The two drug groups,  conform the response vector \textbf{y}.}
+\label{figura43}
+\end{figure}
+
+Exploration of the data set showed clear trends over time for most of the different toxicity parameters. Some of these trends were highly dependent on concentration levels and others were more independent (\autoref{figura44}).
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=1\textwidth]{figura44.pdf}
+\caption[Exploratory analysis of the toxicity data set]{Exploratory analysis of the toxicity data set. Trends over time at each studied concentration for the two drug groups for the different toxicity parameters. (\textbf{A} Reactive Oxygen Species, \textbf{B} Calcium, \textbf{C} Matrix Metalloproteinases, \textbf{D} Mitochondrial Superoxide Indicator, \textbf{E} Reduced glutathione, \textbf{F} Phospholipids, \textbf{G} Lipids and \textbf{H} Viability.}
+\label{figura44}
+\end{figure}
+
+\subsection{Data pre-processing and preparation}
+Based on the exploratory analysis and on the nature of the variables, all toxicity parameters were log-transformed prior to the analysis except for the viability variable, which was left untransformed. One of the drugs, methotrexate, was also excluded from the study because it had a high proportion (over 40\%) of missing values. The \underline{\textbf{X}} array was set up including not only the main variables, but also the interaction between all toxicity variables and the concentration. The array was also mean centered and scaled to unit variance prior to modelling.
+
+\subsection{sNPLS results}
+Results of the repeated cross-validation estimated that the optimal combination of hyperparameter values was \texttt{ncomp=2}, \texttt{keepJ=4} and \texttt{keepK=4}. This combination was selected as the best in 21 of the 30 performed repetitions of the cross-validation procedure (\autoref{figura45}). Interestingly, the selection of the hyperparameter values shows a very low uncertainty compared to other problems with real data such as the one previously presented in this chapter (\autoref{sec:realdata}) or even the simple bread data set presented in \autoref{chapter:package}.
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.7\textwidth]{figura45.pdf}
+\caption[Results of the repeated cross-validation procedure for the toxicity data set]{Results of the repeated cross-validation procedure for the toxicity data set. In 21 of the 30 repetitions the optimal combination was \texttt{ncomp=2}, \texttt{keepJ=4} and \texttt{keepK=4}.}
+\label{figura45}
+\end{figure}
+
+With these results, a sNPLS model was adjusted. The coefficients of the model are presented in \autoref{table:toxicity_results}.
+
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{graphicx}
+\begin{table}[hbtp]
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lllll@{}}
+\toprule
+                                        & \multicolumn{1}{c}{\textbf{Time 1}} & \multicolumn{1}{c}{\textbf{Time 2}} & \textbf{Time 3} & \textbf{Time 4} \\ \midrule
+\textbf{ROS}                            & \multicolumn{1}{c}{0.087}           & \multicolumn{1}{c}{0.087}           & 0.093           & 0.082           \\
+\textbf{Calcium}                        & \multicolumn{1}{c}{0.094}           & \multicolumn{1}{c}{0.094}           & 0.101           & 0.089           \\
+\textbf{MMP}                            & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Mitosox}                        & 0                                   & 0                                   & 0               & 0               \\
+\textbf{GSH}                            & -0.048                              & -0.048                              & -0.051          & -0.045          \\
+\textbf{Phospholipids}                  & 0.089                               & 0.089                               & 0.095           & 0.084           \\
+\textbf{Lipids}                         & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Viability}                      & 0                                   & 0                                   & 0               & 0               \\
+\textbf{ROS:concentration\_2}           & -0.032                              & -0.032                              & -0.032          & -0.031          \\
+\textbf{ROS:concentration\_3}           & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Calcium:concentration\_2}       & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Calcium:concentration\_3}       & 0                                   & 0                                   & 0               & 0               \\
+\textbf{MMP:concentration\_2}           & 0                                   & 0                                   & 0               & 0               \\
+\textbf{MMP:concentration\_3}           & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Mitosox:concentration\_2}       & -0.019                              & -0.019                              & -0.019          & -0.018          \\
+\textbf{Mitosox:concentration\_3}       & 0                                   & 0                                   & 0               & 0               \\
+\textbf{GSH:concentration\_2}           & 0                                   & 0                                   & 0               & 0               \\
+\textbf{GSH:concentration\_3}          & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Phospholipids:concentration\_2} & -0.014                              & -0.015                              & -0.015          & -0.014          \\
+\textbf{Phospholipids:concentration\_3} & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Lipids:concentration\_2}        & -0.009                              & -0.009                              & -0.009          & -0.009          \\
+\textbf{Lipids:concentration\_3}        & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Viability:concentration\_2}     & 0                                   & 0                                   & 0               & 0               \\
+\textbf{Viability:concentration\_3}     & 0                                   & 0                                   & 0               & 0               \\ \bottomrule
+\end{tabular}}
+\caption{Coefficients of the model for predicting drug group in the toxicity data set.}
+\label{table:toxicity_results}
+\end{table}
+
+Overall, results were similar among the three techniques, although sNPLS was able to obtain less false positives, compared to the other two techniques.
