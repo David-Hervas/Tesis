@@ -220,47 +220,104 @@ Results of the repeated cross-validation estimated that the optimal combination 
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.7\textwidth]{figura45.pdf}
-\caption[Results of the repeated cross-validation procedure for the toxicity data set]{Results of the repeated cross-validation procedure for the toxicity data set. In 21 of the 30 repetitions the optimal combination was \texttt{ncomp=2}, \texttt{keepJ=4} and \texttt{keepK=4}.}
+\caption[Results of the repeated cross-validation procedure for the toxicity data set]{Results of the repeated cross-validation procedure for the toxicity data set. The highest density is located at the combination \texttt{ncomp=2}, \texttt{keepJ=4} and \texttt{keepK=4}.}
 \label{figura45}
 \end{figure}
 
-With these results, a sNPLS model was adjusted. The coefficients of the model are presented in \autoref{table:toxicity_results}.
+With these results, a sNPLS model was adjusted using the suggested optimal combination of hyperparameter values. The coefficients of the model are presented in \autoref{table:toxicity_results}. As can be seen in the table, the variables MMP, Lipids and Viability were not selected by the model. This is consistent with the data exploration depicted in \autoref{figura44}, where these variables show no clear differences between both groups. Another interesting result is the selection of the Mitosox variable only for the highest (5Cmax) concentration level. This effect also agrees with the data representation in \autoref{figura44}. For the other variables, the day 14 seems to have the highest effect, getting the largest coefficients in each case. To further interpret the results, different plots of the model are represented in \autoref{figura46}.
 
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
 % \usepackage{graphicx}
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
 \begin{table}[hbtp]
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}lllll@{}}
-\toprule
-                                        & \multicolumn{1}{c}{\textbf{Time 1}} & \multicolumn{1}{c}{\textbf{Time 2}} & \textbf{Time 3} & \textbf{Time 4} \\ \midrule
-\textbf{ROS}                            & \multicolumn{1}{c}{0.087}           & \multicolumn{1}{c}{0.087}           & 0.093           & 0.082           \\
-\textbf{Calcium}                        & \multicolumn{1}{c}{0.094}           & \multicolumn{1}{c}{0.094}           & 0.101           & 0.089           \\
-\textbf{MMP}                            & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Mitosox}                        & 0                                   & 0                                   & 0               & 0               \\
-\textbf{GSH}                            & -0.048                              & -0.048                              & -0.051          & -0.045          \\
-\textbf{Phospholipids}                  & 0.089                               & 0.089                               & 0.095           & 0.084           \\
-\textbf{Lipids}                         & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Viability}                      & 0                                   & 0                                   & 0               & 0               \\
-\textbf{ROS:concentration\_2}           & -0.032                              & -0.032                              & -0.032          & -0.031          \\
-\textbf{ROS:concentration\_3}           & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Calcium:concentration\_2}       & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Calcium:concentration\_3}       & 0                                   & 0                                   & 0               & 0               \\
-\textbf{MMP:concentration\_2}           & 0                                   & 0                                   & 0               & 0               \\
-\textbf{MMP:concentration\_3}           & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Mitosox:concentration\_2}       & -0.019                              & -0.019                              & -0.019          & -0.018          \\
-\textbf{Mitosox:concentration\_3}       & 0                                   & 0                                   & 0               & 0               \\
-\textbf{GSH:concentration\_2}           & 0                                   & 0                                   & 0               & 0               \\
-\textbf{GSH:concentration\_3}          & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Phospholipids:concentration\_2} & -0.014                              & -0.015                              & -0.015          & -0.014          \\
-\textbf{Phospholipids:concentration\_3} & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Lipids:concentration\_2}        & -0.009                              & -0.009                              & -0.009          & -0.009          \\
-\textbf{Lipids:concentration\_3}        & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Viability:concentration\_2}     & 0                                   & 0                                   & 0               & 0               \\
-\textbf{Viability:concentration\_3}     & 0                                   & 0                                   & 0               & 0               \\ \bottomrule
+\centering
+\resizebox{0.8\textwidth}{!}{%
+\begin{tabular}{lllll}
+\hline
+                                 & \multicolumn{1}{c}{\textbf{Day 3}} & \multicolumn{1}{c}{\textbf{Day 7}} & \textbf{Day 14} & \textbf{Day 21} \\ \hline
+\textbf{ROS | 0.2Cmax}           & \multicolumn{1}{c}{0.059}          & \multicolumn{1}{c}{0.069}          & 0.090           & 0.061           \\
+\textbf{Calcium | 0.2Cmax}       & \multicolumn{1}{c}{0.008}          & \multicolumn{1}{c}{0.009}          & 0.012           & 0.008           \\
+\textbf{MMP | 0.2Cmax}           & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Mitosox | 0.2Cmax}       & 0                                  & 0                                  & 0               & 0               \\
+\textbf{GSH | 0.2Cmax}           & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Phospholipids | 0.2Cmax} & 0.049                              & 0.048                              & 0.051           & 0.04            \\
+\textbf{Lipids | 0.2Cmax}        & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Viability | 0.2Cmax}     & 0                                  & 0                                  & 0               & 0               \\
+\textbf{ROS | Cmax}              & 0.024                              & 0.028                              & 0.037           & 0.025           \\
+\textbf{Calcium | Cmax}          & 0.034                              & 0.040                              & 0.052           & 0.036           \\
+\textbf{MMP | Cmax}              & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Mitosox | Cmax}          & 0                                  & 0                                  & 0               & 0               \\
+\textbf{GSH | Cmax}              & -0.008                             & -0.009                             & -0.012          & -0.008          \\
+\textbf{Phospholipids | Cmax}    & 0.069                              & 0.067                              & 0.072           & 0.057           \\
+\textbf{Lipids | Cmax}           & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Viability | Cmax}        & 0                                  & 0                                  & 0               & 0               \\
+\textbf{ROS | 5Cmax}             & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Calcium | 5Cmax}         & 0.028                              & 0.03                               & 0.036           & 0.026           \\
+\textbf{MMP | 5Cmax}             & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Mitosox | 5Cmax}         & 0.006                              & 0.006                              & 0.006           & 0.005           \\
+\textbf{GSH | 5Cmax}             & -0.105                             & -0.102                             & -0.11           & -0.087          \\
+\textbf{Phospholipids | 5Cmax}   & 0.029                              & 0.028                              & 0.030           & 0.024           \\
+\textbf{Lipids | 5Cmax}          & 0                                  & 0                                  & 0               & 0               \\
+\textbf{Viability | 5Cmax}       & 0                                  & 0                                  & 0               & 0               \\ \hline
 \end{tabular}}
-\caption{Coefficients of the model for predicting drug group in the toxicity data set.}
+\caption{Coefficients of the model for predicting drug group in the toxicity data set. Notably, the variables MMP, Lipids and Viability are not selected by the model in any concentration level.}
 \label{table:toxicity_results}
 \end{table}
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=1\textwidth]{figura46.pdf}
+\caption[Plots of the fitted sNPLS model for the toxicity data set]{Plots of the fitted sNPLS model for the toxicity data set. Score plot of the two first components in the \textbf{T} matrix (A); Score plot of the two first components in the \textbf{U} matrix (B); weighting plot of the \textbf{W}\textsuperscript{J} matrix (C); weighting plot of the \textbf{W}\textsuperscript{K} matrix (D); plots of the loadings of the second (E) and third (F) modes}
+\label{figura46}
+\end{figure}
+
+After fitting the sNPLS model, a standard $N$-PLS model was fitted to the data and the Selectivity ratio for each variable was estimated. SR values for each variable at each component are presented in \autoref{table:SR_toxi}.
+
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[hbtp]
+\centering
+\resizebox{0.8\textwidth}{!}{%
+\begin{tabular}{lcc}
+\hline
+                                 & \textbf{Component 1} & \textbf{Component 2} \\ \hline
+\textbf{ROS | 0.2Cmax}           & 1.044                & 1.052                \\
+\textbf{Calcium | 0.2Cmax}       & 1.047                & 1.044                \\
+\textbf{MMP | 0.2Cmax}           & 0.532                & 1.029                \\
+\textbf{Mitosox | 0.2Cmax}       & 1.065                & 1.035                \\
+\textbf{GSH | 0.2Cmax}           & 1.039                & 1.043                \\
+\textbf{Phospholipids | 0.2Cmax} & 1.036                & 1.068                \\
+\textbf{Lipids | 0.2Cmax}        & 0.717                & 1.078                \\
+\textbf{Viability | 0.2Cmax}     & 0.966                & 1.046                \\
+\textbf{ROS | Cmax}              & 1.059                & 1.051                \\
+\textbf{Calcium | Cmax}          & 1.055                & 1.046                \\
+\textbf{MMP | Cmax}              & 1.030                & 1.045                \\
+\textbf{Mitosox | Cmax}          & 1.065                & 1.046                \\
+\textbf{GSH | Cmax}              & 1.041                & 1.040                \\
+\textbf{Phospholipids | Cmax}    & 1.042                & 1.064                \\
+\textbf{Lipids | Cmax}           & 1.085                & 1.061                \\
+\textbf{Viability | Cmax}        & 1.074                & 1.049                \\
+\textbf{ROS | 5Cmax}             & 1.067                & 1.049                \\
+\textbf{Calcium | 5Cmax}         & 1.069                & 1.047                \\
+\textbf{MMP | 5Cmax}             & 0.979                & 0.953                \\
+\textbf{Mitosox | 5Cmax}         & 1.068                & 1.045                \\
+\textbf{GSH | 5Cmax1.060}        & 1.060                & 1.048                \\
+\textbf{Phospholipids | 5Cmax}   & 1.058                & 1.048                \\
+\textbf{Lipids | 5Cmax}          & 1.076                & 1.058                \\
+\textbf{Viability | 5Cmax}       & 1.080                & 1.048                \\ \hline
+\end{tabular}}
+\caption{Selectivity Ratio values for the $N$-PLS model fitted to the toxicity data set.}
+\label{table:SR_toxi}
+\end{table}
+
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.8\textwidth]{figura47.pdf}
+\caption[SR plot for the $N$-PLS model of the toxicity data set]{SR plot for the $N$-PLS model of the toxicity data set. Almost all variables get a similar score, so no variable selection can be performed.}
+\label{figura47}
+\end{figure}
 
 Overall, results were similar among the three techniques, although sNPLS was able to obtain less false positives, compared to the other two techniques.
