@@ -8,24 +8,8 @@
 
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
-\section{\texttt{R} programming language}
-\texttt{R} \parencite{ihaka1996r, rsoftware} is a programming language designed for statistical programming, derived from the \texttt{S} language, which was developed in the Bell Laboratories by Rick Becker, John Chambers and Allan Wilks in the 60s. It is free software and open source, and was designed specifically for performing data analysis and statistical tasks. Since it is open source, \texttt{R} has thousands of developers, which results in more than 10000 packages in the main software repository for \texttt{R} named \textit{CRAN} (\autoref{figura13}) and more than 1300 packages in the \textit{Bioconductor} repository, specialized in packages for the analysis of 'omic' data. For this reasons, \texttt{R} has become a standard for data analysis in many scientific fields such as physics, biology and medicine among others \parencite{goztepe4facto}. 
-
-\begin{figure}[hbtp]
-	\centering
-\includegraphics[width=0.7\textwidth]{figura13.pdf}
-\caption[Number of R packages on CRAN since 2002]{Number of R packages on CRAN has been growing at an exponential rate since 2002.}
-\label{figura13}
-\end{figure}
-
-With the huge number of packages at the disposal of \texttt{R} users, many advanced functions have already been programmed and are available for their use or reuse when programming new functionalities. Apart from the main repository (CRAN) there are other important repositories with thousands of packages more such as \textit{R-Forge}, \textit{Bioconductor} or even \textit{Github}. All this functionallity and the fact that R is open source motivated the election of \texttt{R} as the language for developing all the techniques and tools presented in this thesis.
-
-\subsection{\texttt{R} packages for the analysis of three-way data}
-Most three-way data procedures are implemented in MATLAB\textsuperscript{\tiny\textregistered} \textcite{MATLAB:2010} (or previous versions of the software). Concretely, the $N$-way toolbox by \textcite{andersson2000n} provides a comprehensive set of functions for dealing with three- and multi-way arrays in MATLAB\textsuperscript{\tiny\textregistered}. \texttt{R}, on the other hand, only has two packages dedicated to the analysis of three- or multi-way data. The packages \texttt{PTAk} \parencite{leibovici2010spatio} and \texttt{ThreeWay} \parencite{giordani2014three}, offer a suit of functions for handling three-way arrays in \texttt{R}. These functions include Tucker3 and PARAFAC models and also some processing methods for three-way data such as centering, scaling, unfolding and normalizing arrays. However, $N$-PLS is notably missing from these packages, so no prediction method for three-way arrays was implemented in \texttt{R} before the release of our \texttt{sNPLS} package presented in this section. In this way, with the development of the package, we have not only implemented a newly developed method such as sparse $N$-PLS, but also enabled the use of standard $N$-PLS regression models to \texttt{R} users.
-
-
 \section{Implementation of the sNPLS algorithm in \texttt{R}}
-In this section the key functions of the code for the \textit{sNPLS} package will be exposed and commented. These include the main sNPLS function, the R-matrix function and the cross-validation functions. The full code for the package will be included in the appendix.
+In this section the key functions of the code for the \textit{sNPLS} package implementing the sNPLS method will be exposed and commented. These include the main sNPLS function, the R-matrix function and the cross-validation functions. The full code for the package will be included in the appendix.
 
 \subsection{Main algorithm}
 This is the code of the main function of the package. It performs $N$-PLS regression as explained in \autoref{NPLSregression} and includes an L1-penalization step at the determination of $\textbf{\text{w}}^{J}$ and $\textbf{\text{w}}^{K}$ as explained in \autoref{NPLSpenalization}.
@@ -224,7 +208,7 @@ So, from the equation
     \hat{\textbf{\text{y}}}=\textbf{\text{Tb}}
 \end{equation}
 
-We obtain
+it is obtained
 
 \begin{equation}
     \textbf{\text{b}}_{NPLS}=\textbf{\text{Rb}}
@@ -326,7 +310,7 @@ repeat_cv<-function(X_npls, Y_npls, ncomp = 1:3, keepJ = 1:ncol(X_npls),
 \end{lstlisting}
 
 \section{The sNPLS package}
-In the following section, the use of the different functions of the \texttt{sNPLS} package will be presented, as well as examples of their application to the different parts of the analysis in two data sets. A special emphasis will be given to the main \texttt{sNPLS} function, as well as to both cross-validation functions for the selection of the hyperparameters and to the different plot functions for the interpretation of results. This section is based on our published paper for the \textit{sNPLS} package \parencite{hervas2018sparse}.
+In the following section, the use of the different functions of the \texttt{sNPLS} package will be presented, as well as examples of their application to the different parts of the analysis in two data sets. A special emphasis will be given to the main \texttt{sNPLS} function, as well as to both cross-validation functions for the selection of the hyperparameters and to the different plot functions for the interpretation of results. This section is based on the published paper for the \textit{sNPLS} package \parencite{hervas2018sparse}.
 
 \subsection{Functions}
 \subsubsection{\texttt{sNPLS} function}
@@ -431,7 +415,7 @@ R> repcv
 10     2    12     2
 \end{lstlisting}
 
-This output can be presented as a cross-tabulation table with the absolute frequencies of each combination of the different parameters (\autoref{output2}. In our example, the table shows that the combination \texttt{ncomp}=2, \texttt{keepJ}=9 and \texttt{keepK}=1 is the most recurrent (3 out of 10 repetitions), followed by the combination \texttt{ncomp}=2, \texttt{keepJ}=10 and \texttt{keepK}=1 with two repetitions and five other different combinations with just one occurrence each. It can also be noticed that none of the best combinations included only one component.
+This output can be presented as a cross-tabulation table with the absolute frequencies of each combination of the different parameters (\autoref{output2}. In this example, the table shows that the combination \texttt{ncomp}=2, \texttt{keepJ}=9 and \texttt{keepK}=1 is the most recurrent (3 out of 10 repetitions), followed by the combination \texttt{ncomp}=2, \texttt{keepJ}=10 and \texttt{keepK}=1 with two repetitions and five other different combinations with just one occurrence each. It can also be noticed that none of the best combinations included only one component.
 
 \vspace{15pt}
 \begin{lstlisting}[basicstyle=\small, language=Python, deletekeywords={max, scale}, morekeywords={ftable, table}, otherkeywords={}]
@@ -461,7 +445,7 @@ Results of the \texttt{repeat\_cv} function can also be plotted to obtain a kern
 In this example, according to the plot, the most likely combination after all repetitions of the cross-validation was between 9 and 10 in the case of \texttt{keepJ} and \texttt{keepK}=1. Since the optimal number of components did not vary along all the repetitions, this parameter is not represented in the plot. Instead, the message \texttt{'ncomp is(are) constant with a value of 2'} is returned by the function. The density plot leads to a similar interpretation of the results as the cross-tabulation table, but the smoothing can result in more sensible estimates in the case of multiple and/or wide spread modes. It also provides a visual measure of the uncertainty in the selection of the best combination of parameters.
 
 \subsubsection{Full example functionality}
-To exhibit all package functionality, next we provide a complete analysis of the \texttt{bread} dataset \parencite{bro1998multi} included in the \textit{sNPLS} package. This data set consists on data of five different breads that were baked in duplicate giving a total of ten samples. Eight different judges assessed the breads with respect to eleven different sensorial attributes. The data can be regarded as a three-way array (10 x 11 x 8). The data are quite noisy as opposed to, e.g., spectral data. The salt content of each bread was also measured and it is considered as the response variable \textbf{y}.
+To exhibit all package functionality, next it is provided a complete analysis of the \texttt{bread} dataset \parencite{bro1998multi} included in the \textit{sNPLS} package. This data set consists on data of five different breads that were baked in duplicate giving a total of ten samples. Eight different judges assessed the breads with respect to eleven different sensorial attributes. The data can be regarded as a three-way array (10 x 11 x 8). The data are quite noisy as opposed to, e.g., spectral data. The salt content of each bread was also measured and it is considered as the response variable \textbf{y}.
 \vspace{15pt}
 \begin{lstlisting}[basicstyle=\small, language=Python, morekeywords={data, repeat_cv}]
 R> data(bread)
@@ -508,7 +492,7 @@ This table shows that there are two possible combinations of parameters that are
 \label{figura06}
 \end{figure}
 
-Next step would be fitting the \texttt{sNPLS} model using the \texttt{sNPLS} function with the selected set of parameters. As discussed before, our results point to two possible combinations and, based on the density plot, the option with \texttt{ncomp}=1, \texttt{keepJ}=1 and \texttt{keepK}=4 seems more likely. Nevertheless, we will use the combination with \texttt{ncomp}=2 to get working examples of the \texttt{plot} function (which needs, at least, two dimensions). It is important to take into account that \texttt{keepJ} and \texttt{keepK} have to be specified for each component, so they must be a vector of length equal to the number of components. Note that, in this case, we have chosen the same number of attributes and judges for each component, although this is not necessarily the case.
+Next step would be fitting the \texttt{sNPLS} model using the \texttt{sNPLS} function with the selected set of parameters. As discussed before, the results point to two possible combinations and, based on the density plot, the option with \texttt{ncomp}=1, \texttt{keepJ}=1 and \texttt{keepK}=4 seems more likely. Nevertheless, the combination with \texttt{ncomp}=2 will be used to get working examples of the \texttt{plot} function (which needs, at least, two dimensions). It is important to take into account that \texttt{keepJ} and \texttt{keepK} have to be specified for each component, so they must be a vector of length equal to the number of components. Note that, in this case, the same number of attributes and judges for each component have been chosen, although this is not necessarily the case.
 
 \vspace{15pt}
 \begin{lstlisting}[basicstyle=\small, language=Python, morekeywords={sNPLS, rep}]
@@ -620,7 +604,7 @@ It can be seen how, for the first component, there is approximately the same eff
 
 As seen on these examples, all plots produced by the \texttt{plot.sNPLS} function are fully customizable, being able to change the titles, labels, orientation of labels, axis, size of the plot, etc., by using \textit{base} plot parameters such as \texttt{las}, \texttt{cex}, \texttt{bty}, etc. Since they are base \texttt{R} plots, they can be affected by all \texttt{par} options and also be combined in a single figure by using the \texttt{mfrow} and \texttt{mfcol} options or the \texttt{layout} function.
 
-Finally, the \texttt{predict} function can be used to make predictions using new \textbf{\underline{X}} data. As explained before, it makes use of the coefficients matrix \textbf{B} computed by the \texttt{Rmatrix} function (\autoref{rmatrixf}). Here we use it to make a prediction from a new random \textbf{\underline{X}} array with 10 new observations (\autoref{output5}). This function also has an optional parameter, \texttt{scale}, which defaults to \texttt{TRUE} for controlling the final scale of the predictions (original scale vs. post-processing scale).
+Finally, the \texttt{predict} function can be used to make predictions using new \textbf{\underline{X}} data. As explained before, it makes use of the coefficients matrix \textbf{B} computed by the \texttt{Rmatrix} function (\autoref{rmatrixf}). Here it is used to make a prediction from a new random \textbf{\underline{X}} array with 10 new observations (\autoref{output5}). This function also has an optional parameter, \texttt{scale}, which defaults to \texttt{TRUE} for controlling the final scale of the predictions (original scale vs. post-processing scale).
 
 \vspace{15pt}
 \begin{lstlisting}[basicstyle=\small, language=Python, morekeywords={array, sample, predict}]
@@ -657,20 +641,3 @@ The package offers a complete set of functions for tuning, fitting and interpret
 
 The package also greatly benefits from the use of specialized Basic Linear Algebra Subprograms (BLAS) such as OpenBLAS, ATLAS or Intel\textsuperscript{\tiny\textregistered}  MKL, which can produce additional speedups of up to 10 times faster computation times \parencite{xianyi2014openblas, wang2014intel}. In this case, the potential benefit is left to the decision of the end user, that should install and link one of these BLAS libraries to \texttt{R}.
 
-\section{Future work}
-\label{packagedev}
-The current version of the package is the 0.3.33, which is the 56th update of the initial package. At its current state, the package is fully functional, being able of fitting sparse and standard $N$-PLS models, efficiently performing cross-validation and repeated cross-validation and providing useful plots for the interpretation of results. The package recently incorporated generic base \texttt{R} functions for models such as \texttt{coef}, \texttt{summary} and \texttt{predict} and also has fixed all the detected bugs of the first versions of the software. According to the statistics given by \textit{CRAN}, the \texttt{sNPLS} package averages around 240 downloads per month and has accumulated more than 4500 downloads. These are similar statistics to the two other \texttt{R} packages for three-way analysis, so reception of our package seems to be great among the three-way community of \texttt{R} users.
-
-For future versions of the package one of the priorities is including more options for the application of the penalization factor. Currently, the L1-penalty is determined by choosing the number of non-zero elements in $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$, which can be determined by $K$-fold cross-validation or arbitrarily by the user. Ideally, the L1-penalty values should come from a continuous distribution, being able to take any value, not just discrete values as of now. Related to the application of penalty, we are also studying the possibility of adding an option for L0 penalty, This penalty can be applied using the hard-thresholding operator \parencite{zou2006adaptive}, so it should be straightforward to implement in future versions of the package.
-
-Also the cross-validation procedure does not currently try all the possible combinations of the hyperparameter space, because when there is more than one component, all components are forced to have the same number of \texttt{keepJ} and \texttt{keepK} values. This constrain is only applied because of computational constrains, so different alternatives are being studied to be able to improve efficiency of the cross-validation procedure, thus removing the need for constraining the hyperparameter space. One of such alternatives, which will be implemented in future versions of the package will be the substitution of the grid search procedure for a random search procedure which has been demonstrated to be more efficient and also provide better estimates of uncertainty \parencite{bergstra2012random}.
-
-Another addition regarding the tuning of the parameters and the cross-validation will be the possibility of personalizing the objective metric. Currently, the $RMSE$ is the only option for the optimization of the hyperparameter space. However, in the case of $N$-PLS-DA, other metrics related to classification methods such as missclassification rate or AUC \parencite{bradley1997use} would be more reasonable and should be implemented in future versions of the package.
-
-Related to the optimization of the model by tuning of the hyperparameter space, alternative methods to cross-validation will be studied and implemented, such as information criteria based methods like Akaike information criterion (AIC) \parencite{akaike1974new} or Bayesian information criterion (BIC) \parencite{schwarz1978estimating}. These alternative methods should be much more efficient computationally, so they would be a great addition to the package.
-
-We also have already experimented with the estimation of confidence intervals for the estimates based on resampling, so this will be another addition to the package in the upcoming versions. Related to this, the possibility of estimating the uncertainty in the variable selection procedure will be estudied and implemented if feasible.
-
-Other planned addition is the modification of the plot function so that it creates objects with all the information about the plot instead of only producing them. This way, the user will be able to fully personalize their plots and also make their plots fully reproducible without the new of repeating a large analysis.
-
-Finally, another objective is adding more useful functions to the package for providing a comprehensive framework for three-way analyses. Functions for performing Tucker and PARAFAC models like those already implemented in the \texttt{ThreeWay} and \texttt{PTAk} packages, more pre-processing functions and an extended documentation of all of them, including some vignettes, will be introduced in future versions of the package. Addition of other variable selection methods such as VIP scores and selectivity ratio for $N$-PLS is also planned. 

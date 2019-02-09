@@ -1,6 +1,7 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
+\part{Materials and methods}
 
 \chapter[Multiway data, methods for its analysis]{Multiway data, methods for its analysis}
 \label{chapter:threeways}
@@ -9,7 +10,7 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 \section{From 2D matrices to 3D arrays}
-In most fields, data sets are usually represented by two dimensional matrices, where the rows are the observations and the columns are the different variables ($I \times J$). But in metabolomics, and in general in many other omic sciences, sometimes these $I \times J$ data sets can be expanded by taking for example, repeated measurements at different $K$ time points for each observation and producing a three-dimensional data structure ($I \times J \times K$) called three-way array (\autoref{figura27}) or, more generally, a multidimensional data structure called multi-way array \parencite{kroonenberg2016my}. Most of the modelling methods that have been explained in \autoref{chapter:modern_techniques} are not able of dealing with such data structures, which raise many methodological complications to the analyses. Therefore, different three-way or multi-way specific methods have been developed during the last decades to deal with this sort of data.
+In most fields, data sets are usually represented by two dimensional matrices, where the rows are the observations and the columns are the different variables ($I \times J$). But in metabolomics, and in general in many other 'omic' sciences, sometimes these $I \times J$ data sets can be expanded by taking, for example, repeated measurements at different $K$ time points for each observation and producing a three-dimensional data structure ($I \times J \times K$) called three-way array (\autoref{figura27}) or, more generally, a multidimensional data structure called multi-way array \parencite{kroonenberg2016my}. Most of the modelling methods that have been explained in \autoref{chapter:modern_techniques} are not able of dealing with such data structures, which raise many methodological complications to the analyses. Therefore, different three-way or multi-way specific methods have been developed during the last decades to deal with this sort of data.
 
 \begin{figure}[hbtp]
 \centering
@@ -20,7 +21,7 @@ In most fields, data sets are usually represented by two dimensional matrices, w
 
 \section{Exploration and description of N-way arrays}
 \subsection{Unfolding}
-One of the straightforward solutions for dealing with $N$-way arrays is performing an unfolding of the array into a two-dimensional matrix. This unfolding is performed by regrouping the elements of the higher order modes by extending the dimension of the second mode, as showed in \autoref{figura35}. After the unfolding, all statistical methods valid for two-dimensional matrices are applicable to the new structure, although the tridimensional structure of the data is lost, leading to a list of potential issues such as more complex models (too many parameters), loss of predictive power, loss of the multi-way information and greater difficulty in the interpretation of results.
+One of the straightforward solutions for dealing with $N$-way arrays is performing an unfolding of the array into a two-dimensional matrix. This unfolding is performed by regrouping the elements of the higher order dimensions, also called modes, by extending the dimension of the second mode, as showed in \autoref{figura35}. After the unfolding, all statistical methods valid for two-dimensional matrices are applicable to the new structure, although the tridimensional structure of the data is lost, leading to a list of potential issues such as more complex models (too many parameters), loss of predictive power, loss of the multi-way information and greater difficulty in the interpretation of results.
 
 \begin{figure}[hbtp]
 \centering
@@ -92,7 +93,7 @@ The main advantage of PARAFAC over Tucker3 models is the impossibility of altern
 
 \section{Regression methods for \textit{N}-way arrays, \textit{N}-PLS}
 \label{NPLSregression}
-The $N$-PLS model is an extension of the standard PLS model to multi-way arrays based in the decomposition performed by the PARAFAC model \parencite{bro1996multiway}. It's aim is studying relationships between some three-way (or N-way) \textbf{\underline{X}} (e.g. $I \times J \times K$) data structure and any \textbf{\underline{Y}} (e.g. $I \times L \times M$) data structure by maximizing the covariance between \textbf{\underline{X}} and \textbf{\underline{Y}} data arrays. For achieving this, a multilinear model is fitted simultaneously to the \textbf{\underline{X}} and the \textbf{\underline{Y}} arrays with a regression model relating the two together. The structure of the $N$-PLS model is presented in \autoref{figura38}.
+The $N$-PLS model is an extension of the standard PLS model to multi-way arrays based in the decomposition performed by the PARAFAC model \parencite{bro1996multiway}. Its aim is studying relationships between some three-way (or N-way) \textbf{\underline{X}} (e.g. $I \times J \times K$) data structure and any \textbf{\underline{Y}} (e.g. $I \times L \times M$) data structure by maximizing the covariance between \textbf{\underline{X}} and \textbf{\underline{Y}} data arrays. For achieving this, a multilinear model is fitted simultaneously to the \textbf{\underline{X}} and the \textbf{\underline{Y}} arrays with a regression model relating them together. The structure of the $N$-PLS model is presented in \autoref{figura38}.
 
 \begin{figure}[hbtp]
 \centering
@@ -102,7 +103,7 @@ The $N$-PLS model is an extension of the standard PLS model to multi-way arrays 
 \end{figure}
 
 
-Considering \textbf{X} (IxJK) the unfolded version of \textbf{\underline{X}}, \textit{N}-PLS tries to find latent spaces $\textbf{\text{W}}^{J}$ and $\textbf{\text{W}}^{K}$ that maximize the covariance between \textbf{X} and \textbf{Y}, so it can be expressed as:
+Considering \textbf{X} ($I \times JK$) the unfolded version of \textbf{\underline{X}}, \textit{N}-PLS tries to find latent spaces $\textbf{\text{W}}^{J}$ and $\textbf{\text{W}}^{K}$ that maximize the covariance between \textbf{X} and \textbf{Y}, so it can be expressed as:
 
 \begin{equation}
 \textbf{\text{X}}=\textbf{\text{T}}(\textbf{\text{W}}^{K}|\otimes{}|\textbf{\text{W}}^{J})^{T}+\textbf{\text{R}}
@@ -134,150 +135,19 @@ Finally, from the scores \textbf{T} and \textbf{U}, as well from the \textbf{W} 
 
 In summary, $N$-PLS allows for the application of the well known standard PLS model to multi-way arrays, being able to exploit the multidimensional structure of the data, reducing the inclusion of noise, and producing more parsimonious models than standard PLS models applied to unfolded matrices. 
 
-\subsection{Variable selection methods for $N$-PLS models}
-As explained in the previous section, although $N$-PLS does not provide variable selection at the model-fitting step, some methods have been developed to implement variable selection on the fitted model. In this section the VIP scores and Selectivity Ratio methods will be presented and explained.
 
-\subsubsection{VIP scores}
-The VIP scores method is a ranking method for variable selection that was first developed for standard PLS regression models in two-way data matrices \parencite{wold2001pls, chong2005performance}. For this two-way case, the variable importance in the projection is a measure of the influence of each of the variables in the data matrix \textbf{X} on the response matrix \textbf{Y} (\autoref{equation20})
-
-\begin{equation}
-VIP^2_j=S_fw^2_{jf} \cdot SSY_f \cdot J/(SSY_{tot.expl.} \cdot F)
-\label{equation20}
-\end{equation}
-
-where $J$ is the number of variables in \textbf{X} and $F$ is the number of latent variables in the model. 
-
-When the response is a vector \textbf{y} it holds that
-
-\begin{equation}
-SSY_f=b^2_{ff}\textbf{\text{t}}_f^T\textbf{\text{t}}_f
-\label{equation21}
-\end{equation}
-
-and
-
-\begin{equation}
-SSY_{tot.expl.}=\textbf{\text{b}}^2\textbf{\text{T}}^T\textbf{\text{T}}
-\label{equation22}
-\end{equation}
-
-where \textbf{T} is the score matrix and \textbf{b} are the PLS coefficients. Following this, VIP values for each variable can be computed using the PLS weight $w_{jf}$ based on how much of \textbf{y} is explained in each latent variable. It is considered that VIP values greater than one have an above average influence and should be considered as relevant variables in explaining \textbf{Y}, although the limit is arbitrary and can be modified depending on the requirements of the study \parencite{akarachantachote2014cutoff}.
-
-In their work, \textcite{favilla2013assessing}, expanded the applicability of the VIP scores to the three-way case as follows:
-
-In the case of a two-dimensional \textbf{Y}, the relation presented on \autoref{equation20} applies to each mode of a three-way \textbf{\underline{X}} array:
-
-\begin{equation}
-VIP^2_j=\Sigma_fw^2_{jf} \cdot SSY_{mf} \cdot J/(SSY_{tot.expl.,m} \cdot F)
-\label{equation23}
-\end{equation}
-
-and
-
-\begin{equation}
-VIP^2_k=\Sigma_fw^2_{kf} \cdot SSY_{mf} \cdot K/(SSY_{tot.expl.,m} \cdot F)
-\label{equation24}
-\end{equation}
-
-where $J$ is the number of variables in the second mode of \textbf{\underline{X}} and $K$ is the number of elements of the third mode in \textbf{\underline{X}}.
-
-For each latent variable $f$ it holds that
-
-\begin{equation}
-SSY_{tot.expl.,m}=\Sigma_i(\textbf{\text{T}}_{(I \times F)}\textbf{\text{B}}_{(F \times F)}\textbf{\text{q}}^T_{(m, F)})^2
-\label{equation25}
-\end{equation}
-
-and for each y-variable $y_m$:
-
-\begin{equation}
-SSY_{mf}=\Sigma_i(\textbf{\text{t}}_fb_{ff}q_{mf})^2
-\label{equation26}
-\end{equation}
-
-where $I$ is the number of samples, \textbf{T} is the first mode score matrix, \textbf{B} the inner relation coefficients matrix and \textbf{Q} the loadings matrix of \textbf{Y}.
-
-For any model dimension $f$ and variable $j$ the corresponding VIP value is estimated by the squared weight, $w_{jf}^2$, of that parameter multiplied by the percent of \textbf{Y} explained by that dimension. Then, importance values are normalized constraining the $VIP^2$ value to equal the number of variables.
-
-Taking \autoref{equation25} and \autoref{equation26} When considering all \textbf{Y} variables together, it holds that
-
-\begin{equation}
-SSY_{tot.expl.}=\Sigma_i(\textbf{\text{T}}_{(I \times F)}\textbf{\text{B}}_{(F \times F)}\textbf{\text{Q}}^T_{(M, F)})^2
-\label{equation27}
-\end{equation}
-
-\begin{equation}
-SSY_{f}=\Sigma_m\Sigma_i(\textbf{\text{t}}_fb_{ff}\textbf{\text{q}}^T_{mf})^2
-\label{equation28}
-\end{equation}
-
-and
-
-\begin{equation}
-VIP^2_j=\Sigma_fw^2_{jf} \cdot SSY_{f} \cdot J/(SSY_{tot.expl.} \cdot F)
-\label{equation29}
-\end{equation}
-
-From this, extension to other \textbf{\underline{Y}} modes can be easily obtained.
-
-An example of the VIP score computation results on a PLS analysis is provided in \autoref{figura41}, where the first eleven vaiables and the 28th variable have a VIP score greater than one and are considered as relevant for predicting \textbf{y}.
+\section{Software for analyzing three-way data}
+\subsection{\texttt{R} programming language}
+\texttt{R} \parencite{ihaka1996r, rsoftware} is a programming language designed for statistical programming, derived from the \texttt{S} language, which was developed in the Bell Laboratories by Rick Becker, John Chambers and Allan Wilks in the 60s. It is free software and open source, and was designed specifically for performing data analysis and statistical tasks. Since it is open source, \texttt{R} has thousands of developers, which results in more than 10000 packages in the main software repository for \texttt{R} named \textit{CRAN} (\autoref{figura13}) and more than 1300 packages in the \textit{Bioconductor} repository, specialized in packages for the analysis of 'omic' data. For this reasons, \texttt{R} has become a standard for data analysis in many scientific fields such as physics, biology and medicine among others \parencite{goztepe4facto}. 
 
 \begin{figure}[hbtp]
-\centering
-\includegraphics[width=0.65\textwidth]{figura41.pdf}
-\caption[Plot of the VIP scores from the different variables in a PLS model]{Plot of the VIP scores from the different variables in a PLS model. The dashed red line marks the VIP=1 threshold.}
-\label{figura41}
+	\centering
+\includegraphics[width=0.7\textwidth]{figura13.pdf}
+\caption[Number of R packages on CRAN since 2002]{Number of R packages on CRAN has been growing at an exponential rate since 2002.}
+\label{figura13}
 \end{figure}
 
-\subsubsection{Selectivity Ratio}
-In the majority of cases, several components are needed to adequately fit a model for a specific response \textbf{y}. By using the \textbf{y} vector as a target, it is possible to transform the PLS components to obtain a single predictive target-projected component, which is analogous to the predictive component in orthogonal partial least squares \parencite{bylesjo2006opls}. The selectivity ratio is estimated by calculating the ratio between explained and residual variance of the variables on that target-projected component \parencite{rajalahti2009biomarker}. Briefly, by selecting the normalized regression coefficients as PLS weights
+With the huge number of packages at the disposal of \texttt{R} users, many advanced functions have already been programmed and are available for their use or reuse when programming new functionalities. Apart from the main repository (CRAN) there are other important repositories with thousands of packages more such as \textit{R-Forge}, \textit{Bioconductor} or even \textit{Github}. All this functionallity and the fact that R is open source motivated the election of \texttt{R} as the language for developing all the techniques and tools presented in this thesis.
 
-\begin{equation}
-\textbf{\text{w}}_{TP}=\textbf{\text{b}}_{PLS}/\|\textbf{\text{b}}_{PLS}\|
-\label{equation30}
-\end{equation}
-
-and calculating target-projected scores by projection on the matrix of variables
-
-\begin{equation}
-\textbf{\text{t}}_{TP}=\textbf{\text{Xw}}_{TP}=\textbf{\text{Xb}}_{PLS}/\|\textbf{\text{b}}_{PLS}\|=\hat{\textbf{\text{y}}}/\|\textbf{\text{b}}_{PLS}\|
-\label{equation31}
-\end{equation}
-
-it is showed that the target-projected scores are proportional to the vector of predicted responses.
-
-The target-projected loadings can be calculated as
-
-\begin{equation}
-\textbf{\text{p}}^T_{TP}=\textbf{\text{t}}^T_{TP}\textbf{\text{X}}/(\textbf{\text{t}}^T_{TP}\textbf{\text{t}}_TP)=\textbf{\text{b}}^T_{PLS}/\|\textbf{\text{b}}_{PLS}\|*(\textbf{\text{X}}^T\textbf{\text{X}})/\|\textbf{\text{t}}_{TP}\|^2
-\label{equation32}
-\end{equation}
-
-This shows that the target-projected loadings are the product of the normalized regression coefficients and the covariance matrix of the variables scaled by the inverse of the variance of the target-projected scores. So the target-projected loading vector combines the predictive ability of a variable with its explanatory power.
-
-The target projection model can then be expressed as
-
-\begin{equation}
-\textbf{\text{X}}=\textbf{\text{X}}_{TP}+\textbf{\text{E}}_{TP}=\textbf{\text{t}}_{TP}\textbf{\text{p}}^T_{TP}+\textbf{\text{E}}_{TP}
-\label{equation33}
-\end{equation}
-
-From here, explained and residual variance ($v_{expl,i}$ and $v_{res,i}$ can be computed for each variable $i$. Then the selectivity ratio is obtained by dividing explained and residual variance as follows
-
-\begin{equation}
-SR_i=v_{expl,1}/v_{res,i}, \ i=1,2,3 \dots
-\label{equation34}
-\end{equation}
-
-As with the case of VIP scores and any other ranking method, the limit or threshold of SR value for considering a variable as relevant is arbitrary. Nevertheless, the authors of the original paper considered a 75\% of explained variance, corresponding to a SR of three, a reasonable threshold for selecting variables as relevant in predicting \textbf{y}.
-
-An example of the SR computation results on the same PLS analysis presented in \autoref{figura41} for VIP scores is provided in \autoref{figura42}. It can be seen that conclusions from this method regarding relevant variables are coincident with those obtained using the VIP scores methods, so there is good agreement between both methods. There is only a slight disagreement regarding the first three variables, which are selected by the VIP scores methods and discarded by the selectivity ratio when using the standard threshold values for both methods.
-
-\begin{figure}[hbtp]
-\centering
-\includegraphics[width=0.65\textwidth]{figura42.pdf}
-\caption[Plot of the SR from the different variables in a PLS model]{Plot of the SR from the different variables in a PLS model. The dashed red line marks the SR=3 threshold.}
-\label{figura42}
-\end{figure}
-
-As of today. there are no published studies comparing the use of both methods in a comprehensive set of different data sets for the three-way case. However, a study of \textcite{farres2015comparison} compared both methods regarding variable selection performance and prediction capability in different two-way data sets. This study concluded that, for most data sets, the SR method selected fewer variables than the VIP method. In many cases, some of the variables selected by the VIP method were false positive candidates and some of the variables not selected by the SR were false negative candidates. Regarding prediction accuracy, each method was better that the other in a similar number of data sets, so final decision about the best of the two approaches should be based on the aims of the specific study being performed. 
+\subsection{\texttt{R} packages for the analysis of three-way data}
+Most three-way data procedures are implemented in MATLAB\textsuperscript{\tiny\textregistered} \textcite{MATLAB:2010} (or previous versions of the software). Concretely, the $N$-way toolbox by \textcite{andersson2000n} provides a comprehensive set of functions for dealing with three- and multi-way arrays in MATLAB\textsuperscript{\tiny\textregistered}. \texttt{R}, on the other hand, only has two packages dedicated to the analysis of three- or multi-way data. The packages \texttt{PTAk} \parencite{leibovici2010spatio} and \texttt{ThreeWay} \parencite{giordani2014three}, offer a suit of functions for handling three-way arrays in \texttt{R}. These functions include Tucker3 and PARAFAC models and also some processing methods for three-way data such as centering, scaling, unfolding and normalizing arrays. However, $N$-PLS is notably missing from these packages, so no prediction method for three-way arrays was implemented in \texttt{R} before the release of the \texttt{sNPLS} package developed in this thesis. In this way, with the development of the package, it has not only been implemented a newly developed method such as sparse $N$-PLS, but also enabled the use of standard $N$-PLS regression models to \texttt{R} users.

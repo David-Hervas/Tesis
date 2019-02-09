@@ -1,91 +1,16 @@
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
-\part{Research}
+\part{Results}
 \chapter[Sparse \textit{N}-PLS, a method for variable selection in multiway data sets]{Sparse \textit{N}-PLS, a method for variable selection in multiway data sets}
 
 
 
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
-\section{Variable selection through L1 penalization}
-As explained in \autoref{chapter:modern_techniques}, lasso applies a bias to the model fitting step of a linear or generalized linear model by shrinking all the coefficients using L1-penalization. This shrinkage reduces the complexity of the model, reducing variance and forcing some of the coefficients to be exactly zero, effectively performing variable selection at the same time as it increases predictive capacity reducing prediction error. Unfortunately the application of lasso, or its generalization elastic net, to three-way or multi-way data is not straightforward. The only approximations of these techniques for dealing with three-way data have been based on unfolding of the \textbf{\underline{X}} array \parencite{chiu2013multiway}. 
-
-In \autoref{chapter:threeways}, the standard $N$-PLS algorithm has been presented as an appealing technique for modelling three- or multi-way data sets when there is a response to be predicted. However, it has been exposed that, although there are some post modelling methods for estimating variable importance such as VIP \parencite{favilla2013assessing} and selectivity ratio \parencite{rajalahti2009biomarker},  it does not perform in-model variable selection, which would greatly increase its utility for analyzing metabolomic data sets. Our approach, recently published in \parencite{hervas2018sparse}, consists in applying the L1 penalization from lasso inside the $N$-PLS algorithm to be able to perform variable selection at the model-fitting step while maintaining the capability of $N$-PLS of dealing with multi-way arrays. 
-
-For this, we propose using the soft-thresholding operator which can be derived from the lasso problem as follows:
-\vspace{15pt}
-\begin{enumerate}
-    \item Assuming \textbf{X} (matrizied version of \textbf{\underline{X}}) is composed of orthogonal columns, the least squares solution is
-    
-    \begin{equation}
-        \hat{\beta}^{LS}=(X^TX)^{-1}X^Ty=X^Ty
-    \end{equation}
-    \item Using the Lagrangian form, an equivalent problem to that considered would be
-    
-    \begin{equation}
-        \min_\beta\frac{1}{2}||y-X\beta||^2_2+\lambda||\beta||_1
-    \end{equation}
-    \item Expansion of the first term gives
-    
-    \begin{equation}
-        \frac{1}{2}y^Ty-y^TX\beta+\frac{1}{2}\beta^T\beta
-    \end{equation}
-    Since $y^Ty$ does not contain any of the variables of interest, it can be discarded, and we can consider the following equivalent problem
-    
-    \begin{equation}
-        \min_\beta(-y^TX\beta+\frac{1}{2}||\beta||_2)+\lambda||\beta||_1
-    \end{equation}
-    Which can be rewritten as
-    
-    \begin{equation}
-        \min_\beta \sum_{j=1}^{p}-\hat{\beta}^{LS}_j\beta_j+\frac{1}{2}\beta^2_j+\lambda|\beta_j|
-    \end{equation}
-    So, we have a sum of objectives as the objective function. Since each of them corresponds to a separate $\beta_j$, this means that each variable may be solved individually.
-    \item For a certain $j$, we want to minimize
-    
-    \begin{equation}
-        \mathcal{L}_j = -\hat{\beta}^{LS}_j\beta_j+\frac{1}{2}\beta^2_j+\lambda|\beta_j|
-    \end{equation}
-    If $\hat{\beta}^{LS}_j > 0$, then $\beta_j \geq 0$, otherwise we could just change its sign and get a lower value for the objective function. Correspondingly, if $\hat{\beta}^{LS}_j < 0$, then $\beta_j \leq 0$
-    \item In the first case, if $\hat{\beta}^{LS}_j > 0$ and $\beta_j \geq 0$, then
-    
-    \begin{equation}
-        \mathcal{L}_j = -\hat{\beta}^{LS}_j\beta_j+\frac{1}{2}\beta^2_j+\lambda\beta_j
-    \end{equation}
-    After differentiating respect to $\beta_j$ amd setting equal to zero, we get $\beta_j = \hat{\beta}^{LS}_j-\lambda$. Since $\beta_j \geq 0$, the right-hand side must be non-negative, so the solution would be
-    
-    \begin{equation}
-        \beta_j^{lasso}=sgn(\beta_j^{LS})(|\beta_j^{LS}|-\lambda)^+
-    \end{equation}
-    Which is the soft-thresholding operator.
-    \item In the other case, if $\hat{\beta}^{LS}_j < 0$ and $\beta_j \leq 0$, then
-    
-    \begin{equation}
-        \mathcal{L}_j = -\hat{\beta}^{LS}_j\beta_j+\frac{1}{2}\beta^2_j-\lambda\beta_j
-    \end{equation}
-    After differentiating respect to $\beta_j$ and setting equal to zero, we get $\beta_j = \hat{\beta}^{LS}_j+\lambda$. Since we need $\beta_j \leq 0$ the solution is
-    
-    \begin{equation}
-        \beta_j^{lasso}=sgn(\beta_j^{LS})(|\beta_j^{LS}|-\lambda)^+
-    \end{equation}
-    Which, again, gives the soft-thresholding operator.
-\end{enumerate}
-
-\vspace{20pt}
-The soft-thresholding operator is well known in signal processing and image analysis, since it is used as a denoising filter in noisy images to obtain an approximation of the original image which gives the minimum mean square error \parencite{khare2005soft, joy2013denoising}. To understand how it works, the soft-thresholding function for a threshold of 3 has been represented in \autoref{figura28}. Its use to create sparsity in projection methods was first introduced by \textcite{zou2006sparse} in sparse Principal Component Analysis.
-\vspace{10pt}
-
-\begin{figure}[hbtp]
-\centering
-\includegraphics[width=0.6\textwidth]{figura28.png}
-\caption[Soft-thresholding function]{Soft-thresholding function in the range x = [-10, 10] with a threshold $\lambda$ of 3. Values with $|x|$ higher than $\lambda$ have the threshold value substracted and values with $|x|$ equal or less than $\lambda$ are set to zero. Black dashed line represents the original values and red line represents the thresholded values.}
-\label{figura28}
-\end{figure}
-
 \section{Sparse \textit{N}-PLS, integration of L1 penalization in the \textit{N}-PLS algorithm}
 \label{NPLSpenalization}
-As commented above, we propose to introduce the L1-penalization in the $N$-PLS algorithm. Since we have three modes, our aim is to perform selection not only on the second mode (variables), but also on the third mode. To this aim, we use a similar approach to that of \cite{le2008sparse}. Briefly, to achieve sparse versions of $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ for each latent variable, we introduce the soft-thresholding penalty function $\beta_j^{lasso}=sgn(\beta_j^{LS})(|\beta_j^{LS}|-\lambda)^+$  in the $N$-PLS algorithm right after the SVD at the $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ determination. The complete algorithm is as follows \autoref{figura40}:
+As commented in the previous chapter, it is proposed to introduce the L1-penalization in the $N$-PLS algorithm. Since there are three modes, the aim is to perform selection not only on the second mode (variables), but also on the third mode. To this aim, a similar approach to that of \cite{le2008sparse} is used. Briefly, to achieve sparse versions of $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ for each latent variable, the soft-thresholding penalty function $\beta_j^{lasso}=sgn(\beta_j^{LS})(|\beta_j^{LS}|-\lambda)^+$ is introduced in the $N$-PLS algorithm right after the SVD at the $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ determination. The complete algorithm is as follows \autoref{figura40}:
 
 
 \vspace{20pt}
@@ -126,10 +51,10 @@ This algorithm is applicable to both the standard regression (continuous respons
 
 \section{Hyperparameters of the sparse \textit{N}-PLS algorithm}
 \label{hyperparameters}
-Hyperparameters are tuneable parameters of the model, whose values are specified before starting the algorithm instead of determined inside the algorithm as standard parameters. L1-penalization has one hyperparameter, called the penalization factor (the amount of L1-penalization to apply). However, since the L1-penalization is applied to both $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ the number of hyperparameters for a sparse $N$-PLS model (sNPLS) is three: The number of components (shared with the standard $N$-PLS model), the number of variables to select at each component, and the number of elements of the third mode to select at each component. The number of components can range between one and $J$, and the number of variables per component or elements of the third mode per component can range between zero and $J$ and zero and $K$, respectively. It is necessary that at least one component includes one selected variable and one element of the third mode to fit a valid model. A sparse $N$-PLS model where all variables and all elements of the third mode are forced to be selected reduces to a general $N$-PLS model, where only the number of components acts as hyperparameter.
+Hyperparameters are tuneable parameters of the model, whose values are specified before starting the algorithm instead of determined inside the algorithm as standard parameters. L1-penalization has one hyperparameter, called the penalization factor (the amount of L1-penalization to apply). However, since the L1-penalization is applied to both $\textbf{\text{w}}^\text{J}$ and $\textbf{\text{w}}^\text{K}$ the number of hyperparameters for a sparse $N$-PLS model (sNPLS) is three: the number of components (shared with the standard $N$-PLS model), the number of variables to select at each component, and the number of elements of the third mode to select at each component. The number of components can range between one and $J$, and the number of variables per component or elements of the third mode per component can range between zero and $J$ and zero and $K$, respectively. It is necessary that at least one component includes one selected variable and one element of the third mode to fit a valid model. A sparse $N$-PLS model where all variables and all elements of the third mode are forced to be selected reduces to a general $N$-PLS model, where only the number of components acts as hyperparameter.
 
 \subsection{Tuning of the parameters}
-Optimization of the hyperparameter values is necessary to achieve optimal prediction power or optimal variable selection performance in the case of sNPLS. One important point to take into account is that consistency (selecting the right variables) and minimizing prediction error appear to be non-compatible \parencite{yang2005can}, so the tuning criterion has to be adapted depending on the main objective of the analysis. For the objective of variable selection, \textcite{zou2005regularization} mention the option of just choosing the desired number of non-zero coefficients as a viable alternative for interpretation purposes. In our work, we have focused on minimizing prediction error, so to perform this tuning of the parameters, we propose a grid search of the hyperparameter space \parencite{lameski2015svm} guided by the mean squared prediction error evaluated by cross-validation \parencite{duarte2017empirical}. More specifically, our approach consists on performing $K$-fold cross-validation repeatedly and averaging their results, to alleviate instability in the selection of parameters because of high variance in the single cross-validation results \parencite{krstajic2014cross}. This high variance entails that different runs of the cross-validation procedure can yield different results regarding the estimated best set of the parameters and also that the estimation of the bes set of parameters is prone to overfitting (bias-variance tradeoff).
+Optimization of the hyperparameter values is necessary to achieve optimal prediction power or optimal variable selection performance in the case of sNPLS. One important point to take into account is that consistency (selecting the right variables) and minimizing prediction error appear to be non-compatible \parencite{yang2005can}, so the tuning criterion has to be adapted depending on the main objective of the analysis. For the objective of variable selection, \textcite{zou2005regularization} mention the option of just choosing the desired number of non-zero coefficients as a viable alternative for interpretation purposes. In the present approach, the focus is set on minimizing prediction error, so to perform this tuning of the parameters, a grid search of the hyperparameter space \parencite{lameski2015svm} is proposed guided by the mean squared prediction error evaluated by cross-validation \parencite{duarte2017empirical}. More specifically, the approach consists on performing $K$-fold cross-validation repeatedly and averaging their results, to alleviate instability in the selection of parameters because of high variance in the single cross-validation results \parencite{krstajic2014cross}. This high variance entails that different runs of the cross-validation procedure can yield different results regarding the estimated best set of the parameters and also that the estimation of the best set of parameters is prone to overfitting (bias-variance tradeoff).
 
 Briefly, K-fold cross-validation consists on randomly splitting the data set in a number of folds, $K$, and perform $K$ iterations of model fitting and testing, where a different fold is used as test set in each iteration while the other folds are used to train the model. This way, an out-of-sample estimate for the prediction error of the model is estimated at each iteration. Later, all estimates are averaged to get the mean cross-validated error. 
 
@@ -175,4 +100,4 @@ There are alternative ways to select or tune the hyperparameters apart from cros
 \label{secve}
 \end{enumerate}
 
-Performing a grid search on a three-dimensional hyperparameter step is computationally very demanding, so we have exploited the fact that grid search is an embarrassingly parallel task \parencite{mcgibbon2016osprey} to parallelize the cross-validation procedure and be able to perform our repeated cross-validation in a reasonable time for medium and large data sets. Details on the parallelization algorithm will be presented in next chapter.
+Performing a grid search on a three-dimensional hyperparameter step is computationally very demanding, so the fact that grid search is an embarrassingly parallel task \parencite{mcgibbon2016osprey} is exploited to parallelize the cross-validation procedure and be able to perform the repeated cross-validation in a reasonable time for medium and large data sets. Details on the parallelization algorithm will be presented in next chapter.

@@ -4,13 +4,13 @@
 
 \chapter[Validation of the sparse \textit{N}-PLS method and sNPLS package]{Validation of the sparse \textit{N}-PLS method and sNPLS package}
 \label{chapter:validation}
-In order to show and assess the performance of our sparse $N$-PLS model, we performed different validations to evaluate its properties regarding prediction accuracy and variable selection capabilities in different scenarios. We also wanted to assess the usability of our package in a real-world data set analysis. For this, simulated and real data sets were used, where we also compared the performance of $N$-PLS against the performance of sparse $N$-PLS regarding predictive capability. The following sections are based on our recent publication \parencite{hervas2018snpls} regarding the validation of the sNPLS method.
+In order to show and assess the performance of the sparse $N$-PLS model, different validations were performed to evaluate its properties regarding prediction accuracy and variable selection capabilities in different scenarios. It also was necessary to assess the usability of the sNPLS package in a real-world data set analysis. For this, simulated and real data sets were used, where the performance of $N$-PLS against the performance of sparse $N$-PLS was also compared regarding predictive capability. The following sections are based on the recent publication \parencite{hervas2018snpls} regarding the validation of the sNPLS method.
 
 
 % ---------------------------------------------------------------------
 % ---------------------------------------------------------------------
 \section{Random synthetic data sets}
-The performance of our implementation of the sparse $N$-PLS was first tested using data simulation. In total, fourteen different scenarios with different signal-to-noise ratios and different distributions of the data were assessed. Tuning of the hyperparameters of the models was performed with the \texttt{repeat\_cv} function using 20 repetitions of 10-fold cross-validation following the methodology presented in \autoref{chapter:package}. Each simulation generated a three-way \textbf{\underline{X}} array with $I$=50 samples, $J$=50 variables and $K$=3 times, where variables were randomly sampled from different kinds of distributions (Poisson, Normal and Uniform) with varying parameters as follows:
+The performance of the implementation of the sparse $N$-PLS was first tested using data simulation. In total, fourteen different scenarios with different signal-to-noise ratios and different distributions of the data were assessed. Tuning of the hyperparameters of the models was performed with the \texttt{repeat\_cv} function using 20 repetitions of 10-fold cross-validation following the methodology presented in \autoref{chapter:package}. Each simulation generated a three-way \textbf{\underline{X}} array with $I$=50 samples, $J$=50 variables and $K$=3 times, where variables were randomly sampled from different kinds of distributions (Poisson, Normal and Uniform) with varying parameters as follows:
 
 \vspace{15pt}
 \begin{enumerate}
@@ -21,7 +21,7 @@ The performance of our implementation of the sparse $N$-PLS was first tested usi
 \vspace{10pt}
 Only 5 out of the 50 variables were used to construct the response \textbf{\underline{Y}}. They were chosen randomly from the \textbf{\underline{X}} array and assigned randomly the following coefficients: 0.4, 0.5, 0.6, 0.7 and 0.9. In the first run, only one of the three times of the third mode was involved in the creation of, in this case, vector \textbf{y}. In the second run, the three times were involved, but with different coefficients for each variable. In all simulations, random Normal and Poisson errors were added in different amounts to \textbf{y}. For each combination of type and amount of random error, simulations were repeated 100 times. Ability to select the real variables involved in \textbf{y} generation as well as median and 1\textsuperscript{st} and 3\textsuperscript{rd} quartiles of the mean squared error were estimated for each simulation run.
 
-Results of the different simulations carried out on the synthetic data sets are provided in \autoref{table:results_synthetic}. Sparse $N$-PLS outperformed $N$-PLS regarding prediction error, with a mean squared error which was significantly lower in almost all simulation scenarios. This difference in prediction error increased as the signal-to-noise ratio decreased. Regarding variable selection, when performing sparse $N$-PLS, the true variables were almost always included in the selected model. Since simulations were repeated 100 times for each scenario, we summarized their results by giving descriptive statistics of the distribution of the results. Median number of true variables selected in each model was 5 (100\%) in most of the simulations (9 out of 14). In the other 5 simulations, the median number of true variables selected was 4 (80\%). These simulations where one of the true predictor variables was not selected were the ones consisting in the more complex and noisy models, with the three times of the third mode affecting \textbf{y} and lower signal-to-noise ratios. Also, a varying amount of other noise variables were erroneously included in the models. The amount of false positives (noise variables) that were included in the sparse $N$-PLS models increased remarkably as the signal-to-noise ratio of the data decreased, ranging from a median of 2 (4.4\%) in the case of high signal-to-noise ratio data sets, to a median of 7 (15.6\%) noise variables included in the low signal-to-noise, worst-case simulations. 
+Results of the different simulations carried out on the synthetic data sets are provided in \autoref{table:results_synthetic}. Sparse $N$-PLS outperformed $N$-PLS regarding prediction error, with a mean squared error which was significantly lower in almost all simulation scenarios. This difference in prediction error increased as the signal-to-noise ratio decreased. Regarding variable selection, when performing sparse $N$-PLS, the true variables were almost always included in the selected model. Since simulations were repeated 100 times for each scenario, their results were summarized by giving descriptive statistics of the distribution of the results. Median number of true variables selected in each model was 5 (100\%) in most of the simulations (9 out of 14). In the other 5 simulations, the median number of true variables selected was 4 (80\%). These simulations where one of the true predictor variables was not selected were the ones consisting in the more complex and noisy models, with the three times of the third mode affecting \textbf{y} and lower signal-to-noise ratios. Also, a varying amount of other noise variables were erroneously included in the models. The amount of false positives (noise variables) that were included in the sparse $N$-PLS models increased remarkably as the signal-to-noise ratio of the data decreased, ranging from a median of 2 (4.4\%) in the case of high signal-to-noise ratio data sets, to a median of 7 (15.6\%) noise variables included in the low signal-to-noise, worst-case simulations. 
 
 \begin{table}[hbtp]
 \centering
@@ -69,7 +69,7 @@ Poisson error        & 205.18           & 118.58          & \multirow{2}{*}{{[}-
 \section{Data driven synthetic data sets}
 To further test the performance of the method in selecting highly correlated variables, simulated data resembling the ones of a  toxicogenomics data set \parencite{heijne2004bromobenzene} was analysed. In this work, the effect of the hepatotoxicant bromobenzene in rats was studied. Groups of rats were treated with different doses of this toxic compound dissolved in corn oil for a 48 hours period. At three time points from the start of the treatment, rats were sacrificed. Liver samples were used to extract mRNA for microarray profiling and blood and urine was used for metabolite profiling. Additionally, 21 physiological parameters were recorded: Glucose, A/G ratio, GSH, Body Weight, Creatin, GGT, Urea, Kidneys, Kidney/BW, Triglycerides, Liver, Albumin, Total Protein, ALP, Liver/BW, Bilirubin, LDH, Phospholipids, Cholesterol, ASAT, ALAT. 
 
-For our study, simulated profiles from 14 of these 21 physiological parameters were used to discriminate between two of the different groups (High and Low doses evolution). In order to compute these profiles, since they were not shown in \parencite{heijne2004bromobenzene}, we took advantage of those shown in \cite{conesa2010multiway}, which correspond to the same dataset. 25 samples for high doses and 25 for low doses were simulated, adding to the pattern random normal noise, with standard deviation 0.1.
+For this study, simulated profiles from 14 of these 21 physiological parameters were used to discriminate between two of the different groups (High and Low doses evolution). In order to compute these profiles, since they were not shown in \parencite{heijne2004bromobenzene}, it was taken advantage of those shown in \cite{conesa2010multiway}, which correspond to the same dataset. 25 samples for high doses and 25 for low doses were simulated, adding to the pattern random normal noise, with standard deviation 0.1.
 
 \autoref{figura29} represents time course levels of the seven patterns corresponding to the 14 physiological parameters evaluated for high and low dose treatment groups. 
 
@@ -82,7 +82,7 @@ For our study, simulated profiles from 14 of these 21 physiological parameters w
 
 These variables were grouped attending to their common patterns in the following seven groups: i) ALT, AST, LDH and GSH; ii) Creatin and Albumin; iii) Kidney and Cholesterol; iv) Liver, Phospholipids and Triglycerides; v) Glucose; vi) A/G Ratio and vii) Urea.
 
-Our goal with this simulations based on a real data set was to test the ability of the sparse $N$-PLS model in selecting those relevant variables that were associated to the response (discrimination between both groups) even in the case that these variables were correlated. On one hand, since the original lasso for least squares is known to suffer from multicollinearity as explained in \autoref{chapter:modern_techniques}, we were concerned with the performance of our sparse $N$-PLS model in such scenarios. But, on the other hand, since our penalization is included at the model-fitting step of $N$-PLS, which deals excellently with multicollinearity, we were confident that our method would be able to treat correlated variables adequately. More concretely, our expectations were that sNPLS would behave similarly to elastic net, where L1 and L2 penalty are combined \autoref{chapter:modern_techniques}, since PLS is very similar to L2 penalization in the way it shrinks the coefficients \parencite{de1995pls}. Our results, presented in \autoref{table:results_synth2} which summarizes the model coefficients obtained in the analysis, confirmed our hypothesis of good performance in the presence of collinearity. 
+The goal with this simulations based on a real data set was to test the ability of the sparse $N$-PLS model in selecting those relevant variables that were associated to the response (discrimination between both groups) even in the case that these variables were correlated. On one hand, since the original lasso for least squares is known to suffer from multicollinearity as explained in \autoref{chapter:modern_techniques}, there was a concern regarding the performance of the sparse $N$-PLS model in such scenarios. But, on the other hand, since the penalization is included at the model-fitting step of $N$-PLS, which deals excellently with multicollinearity, there was confidence that the method would be able to treat correlated variables adequately. More concretely, the expectations were that sNPLS would behave similarly to elastic net, where L1 and L2 penalty are combined \autoref{chapter:modern_techniques}, since PLS is very similar to L2 penalization in the way it shrinks the coefficients \parencite{de1995pls}. The results, presented in \autoref{table:results_synth2} which summarizes the model coefficients obtained in the analysis, confirmed the hypothesis of good performance in the presence of collinearity. 
 
 \begin{table}[hbtp]
 \centering
@@ -113,7 +113,7 @@ Overall, results showed good agreement with the structure of the data. All the v
 
 \section{Real data sets}
 \label{sec:realdata}
-Simulated data sets provide a useful suitable first approach to test the performance of the new sNPLS method. However, to exemplify sNPLS and its utility in a more complex context, the proposed method was faced to the analysis of a real dataset, which was derived from a metabolomics study. In metabolomics data sets usually hundreds of variables, with high noise and high correlation, are obtained. This dramatically hinders biomarker discovery and variable selection for predictive models building.  Thus, real processed rat serum samples were used to artificially generate two different groups by adding a set of standards at different final concentrations that additionally showed different trends along time (\autoref{figura30}). In our opinion, this experimental design provides a suitable frame work for assessing sNPLS capabilities when facing real -omics data sets.
+Simulated data sets provide a useful suitable first approach to test the performance of the new sNPLS method. However, to exemplify sNPLS and its utility in a more complex context, the proposed method was faced to the analysis of a real dataset, which was derived from a metabolomics study. In metabolomics data sets usually hundreds of variables, with high noise and high correlation, are obtained. This dramatically hinders biomarker discovery and variable selection for predictive models building.  Thus, real processed rat serum samples were used to artificially generate two different groups by adding a set of standards at different final concentrations that additionally showed different trends along time (\autoref{figura30}). It was expected that this experimental design provides a suitable frame work for assessing sNPLS capabilities when facing real '-omics' data sets.
 
 
 \begin{figure}[hbtp]
@@ -123,7 +123,7 @@ Simulated data sets provide a useful suitable first approach to test the perform
 \label{figura30}
 \end{figure}
 
-In the following paragraphs, the whole experimental procedure for obtaining our real metabolomics data set is thoroughly described. 
+In the following paragraphs, the whole experimental procedure for obtaining the real metabolomics data set is thoroughly described. 
 
 Liquid chromatography–mass spectrometry (LC-MS) analyses of rat serum samples were performed in an Agilent 1290 Infinity LC system coupled to an Agilent 6550 Q-TOF mass spectrometer equipped with an ESI source (Agilent Technologies, Santa Clara, CA, USA). LC-MS grade solvents (i.e. water, acetonitrile and methanol) were acquired from Fisher Scientific (Loughborough, UK). All the LC-MS additives and standards were acquired from Sigma–Aldrich/Fluka (Madrid, Spain). Metabolites were separated on an Zorbax SB-Aq column (100 x 2.1 mm; 1.8 {\textmu}m (Agilent Technologies, Santa Clara, CA, USA). Mobile phases consisted of (A) 1mM ammonium fluoride and (B) acetonitrile. The separation was conducted under the following gradient at a flow of 0.3 mL/min: 0 min 3\% (B); 0–2 min 40\% (B); 2-5 min 7\% (B); 5-7 min 50\% (B); 7-12 min 100\% (B); 12-16min 100\% (B); 16-16.5 min 3\% (B); 16.5-18 min 3\% (B). Sample and column temperatures were maintained at 4 ºC and 40ºC, respectively. The injection volume was 5 {\textmu}L. 
 The instrument was tuned in the 50-1700 m/z range using an Agilent tune mix in 2GHz extended dynamic range mode (mass resolving power 25,000 FWHM). Detection was performed in ESI (-) mode in the 50-1000 m/z range. A reference solution (m/z 119.0360 and m/z 980.0164) was used to correct small mass drifts during acquisition. The following conditions were employed: capillary voltage, 3.5 kV; nozzle voltage -1.0 kV; fragmentor voltage, 175 V; gas temperature, 200 ºC; drying gas (nitrogen), 14 L/min; nebulizer gas (nitrogen), 35 psi; sheath gas temperature, 350 ºC; and sheath gas flow (nitrogen), 11 L/min. The acquisition rate was set at 4 spectra/s in all cases. Data preprocessing was performed using ProgenesisQI software (Nonlinear Dynamics, UK).
@@ -147,7 +147,7 @@ D                       & \begin{tabular}[c]{@{}c@{}}Ornithine, Glutamate, Gluta
 \end{table}
 
 \subsubsection{Results of the real data set analysis}
-Our cross-validation procedure (20 repetitions of 5-fold cross-validation) selected as the optimum parameter values 30 features of \textbf{W}\textsuperscript{J}, 3 features of \textbf{W}\textsuperscript{K} and 2 components. Therefore, 60 variables among the initial 1220 obtained from the LC-MS analysis (30 in each component) were selected by our final sparse $N$-PLS model. Out of the four variable classes which were different between both groups by design (\autoref{table:metabolites}), our model included at least one representative variable for each class. The model also included other variables not present among the four controlled variable classes, but many of them showed similar patterns to those included and could be derivatives or adducts of the original metabolites. Overall, the selection provided by the new model showed a quite feasible result, where not only the real assignable variables (added metabolites) but also those interfering ones could be selected. A list of all the selected variables is presented in \autoref{table:results_real}. The first column list those variables selected by sparse $N$-PLS, while  the second column indicates on which component these variables were selected. The third column shows wether these variables belong or not to one of the classes described in \autoref{table:metabolites}. Finally, column four shows whether those variables that do not belong to any of the assayed classes follows or not a pattern similar to those variables included in \autoref{table:metabolites}. 
+The cross-validation procedure (20 repetitions of 5-fold cross-validation) selected as the optimum parameter values 30 features of \textbf{W}\textsuperscript{J}, 3 features of \textbf{W}\textsuperscript{K} and 2 components. Therefore, 60 variables among the initial 1220 obtained from the LC-MS analysis (30 in each component) were selected by the final sparse $N$-PLS model. Out of the four variable classes which were different between both groups by design (\autoref{table:metabolites}), the model included at least one representative variable for each class. The model also included other variables not present among the four controlled variable classes, but many of them showed similar patterns to those included and could be derivatives or adducts of the original metabolites. Overall, the selection provided by the new model showed a quite feasible result, where not only the real assignable variables (added metabolites) but also those interfering ones could be selected. A list of all the selected variables is presented in \autoref{table:results_real}. The first column list those variables selected by sparse $N$-PLS, while  the second column indicates on which component these variables were selected. The third column shows wether these variables belong or not to one of the classes described in \autoref{table:metabolites}. Finally, column four shows whether those variables that do not belong to any of the assayed classes follows or not a pattern similar to those variables included in \autoref{table:metabolites}. 
 \vspace{10pt}
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
@@ -178,8 +178,8 @@ V470                                                                            
 Interestingly, variables of the classes A, B and C and its derivatives or analogues were all exclusively selected in the first component and variables of the class D and its derivatives or analogues were all exclusively selected in the second component. Variables with different patterns to those of the four experimentally generated classes were included in both components, but were more prominent in the second one (13 in the first component versus 20 in the second). 
 
 
-Finally, the performance of our model was compared with the standard $N$-PLS model. To this end, the metabolomics data set was analyzed using both approaches. The sNPLS model clearly discriminated between the two rat groups (\autoref{figura31}A). However, similar groups’ separation was also obtained by using the standard $N$-PLS (\autoref{figura31}B). The differences between both models appear when comparing \autoref{figura31}B vs \autoref{figura31}G, and \autoref{figura31}C vs \autoref{figura31}H, related to \textbf{W}\textsuperscript{J} and \textbf{W}\textsuperscript{K}, respectively; or \autoref{figura31}D vs \autoref{figura31}I, and \autoref{figura31}E vs \autoref{figura31}J respectively, which are alternative representations. For interpretation purposes, it seems better to compare \autoref{figura31}B vs \autoref{figura31}G for \textbf{W}\textsuperscript{J}, and \autoref{figura31}E vs \autoref{figura31}J for \textbf{W}\textsuperscript{K}. For \textbf{W}\textsuperscript{J}, it seems quite clear that the selection made from sparse $N$-PLS allows a clear interpretation of the metabolites responsible for the separation between the two groups. In the first component, are represented those metabolites belonging to the classes 1, 2 and 3. While, the second component is related to completely independent metabolites (with respect to component one), which could be related to the separation of rats 6 and 13. Many of these metabolites are from class 4, although some of them are not apparently related to any of the designed variable groups.
-These interpretations are much more hard to do when using standard $N$-PLS due to the high number of variables to deal with in the second (metabolites) mode, so from this perspective the proposed approach seems to improve the standard $N$-PLS model when trying to directly select the variables of interest (metabolites in this case). However, it should be highlighted that variable selection is out of the $N$-PLS scope. These results shows that when variable selection is of prior relevance for interpretation or validation purposes sparse $N$-PLS come up as a valid alternative
+Finally, the performance of the model was compared with the standard $N$-PLS model. To this end, the metabolomics data set was analyzed using both approaches. The sNPLS model clearly discriminated between the two rat groups (\autoref{figura31}A). However, similar groups’ separation was also obtained by using the standard $N$-PLS (\autoref{figura31}B). The differences between both models appear when comparing \autoref{figura31}B vs \autoref{figura31}G, and \autoref{figura31}C vs \autoref{figura31}H, related to \textbf{W}\textsuperscript{J} and \textbf{W}\textsuperscript{K}, respectively; or \autoref{figura31}D vs \autoref{figura31}I, and \autoref{figura31}E vs \autoref{figura31}J respectively, which are alternative representations. For interpretation purposes, it seems better to compare \autoref{figura31}B vs \autoref{figura31}G for \textbf{W}\textsuperscript{J}, and \autoref{figura31}E vs \autoref{figura31}J for \textbf{W}\textsuperscript{K}. For \textbf{W}\textsuperscript{J}, it seems quite clear that the selection made from sparse $N$-PLS allows a clear interpretation of the metabolites responsible for the separation between the two groups. In the first component are represented those metabolites belonging to the classes 1, 2 and 3. While, the second component is related to completely independent metabolites (with respect to component one), which could be related to the separation of rats 6 and 13. Many of these metabolites are from class 4, although some of them are not apparently related to any of the designed variable groups.
+These interpretations are much more hard to do when using standard $N$-PLS due to the high number of variables to deal with in the second (metabolites) mode, so from this perspective the proposed approach seems to improve the standard $N$-PLS model when trying to directly select the variables of interest (metabolites in this case). However, it should be highlighted that variable selection is out of the $N$-PLS scope. These results show that when variable selection is of prior relevance for interpretation or validation purposes sparse $N$-PLS come up as a valid alternative
 For the interpretation of \textbf{W}\textsuperscript{K}, \autoref{figura31}E and \autoref{figura31}J have been selected. These plots show,  for the first component, a similar pattern, although a slight shift downwards is observed for the standard $N$-PLS. The similar trend observed for both methods strengths the use of the sparse $N$-PLS results, as it provides extra information as discussed above. However, regarding the second component, they do not provided the same result, which could be related to the clear separation of rats 6 and 13 observed in sparse $N$-PLS (\autoref{figura31}A).
 
 \begin{figure}[hbtp]
@@ -193,7 +193,7 @@ For the interpretation of \textbf{W}\textsuperscript{K}, \autoref{figura31}E and
 As exposed in \autoref{chapter:threeways}, although $N$-PLS does not provide variable selection at the model fitting step, some methods have been developed to perform variable selection after the fitting of the model. Variable Importance in Projection (VIP) scores \parencite{favilla2013assessing} and Selectivity Ratio \parencite{rajalahti2009biomarker} have been used successfully in different studies \parencite{favilla2014ranking, mostafapour2015n, yun2016variable}.
 
 \subsection{The hepatic toxicity data set}
-To better get a view of the similarities and differences between our method and the VIP scores and Selectivity Ratio methods, we analyzed a biological data set using the three methods and compared their results. This data set consisted on measures of eight different toxicity parameters at four different time points in samples of hepatic cells treated with fifteen different drugs at three different concentrations. A scheme of the structure of the data is depicted in \autoref{figura43}. A complete description of the data set can be found in \textcite{tolosa2018long}. 
+To better get a view of the similarities and differences between the sNPLS method and the VIP scores and Selectivity Ratio methods, a complex biological data set was analyzed using the three methods and compared their results. This data set consisted on measures of eight different toxicity parameters at four different time points in samples of hepatic cells treated with fifteen different drugs at three different concentrations. A scheme of the structure of the data is depicted in \autoref{figura43}. A complete description of the data set can be found in \textcite{tolosa2018long}. 
 
 \begin{figure}[hbtp]
 	\centering
@@ -224,7 +224,7 @@ Results of the repeated cross-validation estimated that the optimal combination 
 \label{figura45}
 \end{figure}
 
-With these results, a sNPLS model was adjusted using the suggested optimal combination of hyperparameter values. The coefficients of the model are presented in \autoref{table:toxicity_results}. As can be seen in the table, the variables MMP, Lipids and Viability were not selected by the model. This is consistent with the data exploration depicted in \autoref{figura44}, where these variables show no clear differences between both groups. Another interesting result is the selection of the Mitosox variable only for the highest (5Cmax) concentration level. This effect also agrees with the data representation in \autoref{figura44}. For the other variables, the day 14 seems to have the highest effect, getting the largest coefficients in each case. To further interpret the results, different plots of the model are represented in \autoref{figura46}.
+With these results, a sNPLS model was adjusted using the suggested optimal combination of hyperparameter values. The coefficients of the model are presented in \autoref{table:toxicity_results}. As can be seen in the table, the variables MMP, lipids and viability were not selected by the model. This is consistent with the data exploration depicted in \autoref{figura44}, where these variables show no clear differences between both groups. Another interesting result is the selection of the mitosox variable only for the highest (5Cmax) concentration level. This effect also agrees with the data representation in \autoref{figura44}. For the other variables, the day 14 seems to have the highest effect, getting the largest coefficients in each case. To further interpret the results, different plots of the model are represented in \autoref{figura46}.
 
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
@@ -262,7 +262,7 @@ With these results, a sNPLS model was adjusted using the suggested optimal combi
 \textbf{Lipids | 5Cmax}          & 0                                  & 0                                  & 0               & 0               \\
 \textbf{Viability | 5Cmax}       & 0                                  & 0                                  & 0               & 0               \\ \hline
 \end{tabular}}
-\caption{Coefficients of the model for predicting drug group in the toxicity data set. Notably, the variables MMP, Lipids and Viability are not selected by the model in any concentration level.}
+\caption[Coefficients of the model for predicting drug group in the toxicity data set]{Coefficients of the model for predicting drug group in the toxicity data set. Notably, the variables MMP, Lipids and Viability are not selected by the model in any concentration level.}
 \label{table:toxicity_results}
 \end{table}
 
@@ -273,7 +273,11 @@ With these results, a sNPLS model was adjusted using the suggested optimal combi
 \label{figura46}
 \end{figure}
 
-After fitting the sNPLS model, a standard $N$-PLS model was fitted to the data and the Selectivity ratio for each variable was estimated. SR values for each variable at each component are presented in \autoref{table:SR_toxi}.
+\subsection{Selectivity ratio results}
+After fitting the sNPLS model, a standard $N$-PLS model was fitted to the data and the Selectivity ratio for each variable was estimated. Code for performing SR on $N$-way arrays was implemented in \texttt{R} based on \textcite{rajalahti2009biomarker} and is included in the \texttt{sNPLS} package since version 0.4. SR values for each variable at each component are presented in \autoref{table:SR_toxi}.
+
+For this data set, estimation of the SR does not yield highly discriminative results between the different variables. Only MMP at 0.2 Cmax, Lipids at 0.2 Cmax and, to a lesser extent, MMP at 5 Cmax, display a lower SR value compared to the other variables. This two variables, Lipids and MMP, were not selected by the sNPLS model, so there is a slight coincidence in these results. A plot of the different SR values for each variable in each component is depicted in \autoref{figura47}.
+\vspace{10pt}
 
 % Please add the following required packages to your document preamble:
 % \usepackage{graphicx}
@@ -316,8 +320,59 @@ After fitting the sNPLS model, a standard $N$-PLS model was fitted to the data a
 \begin{figure}[hbtp]
 	\centering
 \includegraphics[width=0.8\textwidth]{figura47.pdf}
-\caption[SR plot for the $N$-PLS model of the toxicity data set]{SR plot for the $N$-PLS model of the toxicity data set. Almost all variables get a similar score, so no variable selection can be performed.}
+\caption[SR plot for the $N$-PLS model of the toxicity data set]{SR plot for the $N$-PLS model of the toxicity data set. Almost all variables get a similar score, so almost no variable selection can be performed.}
 \label{figura47}
 \end{figure}
 
-Overall, results were similar among the three techniques, although sNPLS was able to obtain less false positives, compared to the other two techniques.
+\subsection{VIP results}
+Additionally to the SR results, VIP scores were also estimated for the fitted standard $N$-PLS model. Code for estimating VIP scores on $N$-way arrays was implemented in \texttt{R} based on the paper by \textcite{favilla2013assessing} and is included in the \texttt{sNPLS} package since version 0.4.2. VIP scores for each variable at each component are presented in \autoref{table:VIP_toxi}.
+
+\vspace{10pt}
+
+\begin{table}[hbtp]
+\centering
+\resizebox{0.55\textwidth}{!}{%
+\begin{tabular}{lcc}
+\hline
+                                  & \textbf{VIP score} \\ \hline
+\textbf{ROS | 0.2Cmax}            & 0.78               \\
+\textbf{Calcium | 0.2Cmax}        & 0.83               \\
+\textbf{MMP | 0.2Cmax}            & 0.028              \\
+\textbf{Mitosox | 0.2Cmax}        & 0.073              \\
+\textbf{GSH | 0.2Cmax}            & 0.066              \\
+\textbf{Phospholipids | 0.2Cmax}  & 0.31               \\
+\textbf{Lipids | 0.2Cmax}         & 0.041              \\
+\textbf{Viability | 0.2Cmax0.013} & 0.013              \\
+\textbf{ROS | Cmax}               & 2.47               \\
+\textbf{Calcium | Cmax}           & 1.92               \\
+\textbf{MMP | Cmax}               & 0.033              \\
+\textbf{Mitosox | Cmax}           & 0.21               \\
+\textbf{GSH | Cmax}               & 0.13               \\
+\textbf{Phospholipids | Cmax}     & 0.43               \\
+\textbf{Lipids | Cmax}            & 0.27               \\
+\textbf{Viability | Cmax}         & 0.13               \\
+\textbf{ROS | 5Cmax}              & 5.09               \\
+\textbf{Calcium | 5Cmax}          & 3.42               \\
+\textbf{MMP | 5Cmax}              & 0.079              \\
+\textbf{Mitosox | 5Cmax}          & 1.25               \\
+\textbf{GSH | 5Cmax1.060}         & 0.47               \\
+\textbf{Phospholipids | 5Cmax}    & 3.48               \\
+\textbf{Lipids | 5Cmax}           & 1.97               \\
+\textbf{Viability | 5Cmax}        & 0.50               \\ \hline
+\end{tabular}}
+\caption{VIP score values for the $N$-PLS model fitted to the toxicity data set.}
+\label{table:VIP_toxi}
+\end{table}
+
+Interestingly, in the case of VIP scores, the concordance with sNPLS is greater compared to the concordance between SR and sNPLS. VIP scores, clearly selects the variables ROS Cmax, calcium Cmax, ROS 5Cmax, calcium 5Cmax, mitosox 5Cmax, phospholipids 5Cmax and lipids 5Cmax as important variables. Of these seven variables, six were also selected by the sNPLS method. sNPLS also selected ROS 0.2Cmax, calcium 0.2Cmax, phospholipids 0.2Cmax, GSH Cmax and phospholipids Cmax as important variables. For these, the VIP scores method gives a relatively high score to ROS 0.2Cmax and Calcium 0.2Cmax variables, but clearly considers non-important phospholipids 0.2Cmax (VIP score of 0.31), GSH Cmax (VIP score of 0.13) and phospholipids Cmax (VIP score of 0.43). A plot comparing the results of the VIP score method and the sNPLS method is presented in \autoref{figura48}.
+
+\vspace{10pt}
+
+\begin{figure}[hbtp]
+	\centering
+\includegraphics[width=0.85\textwidth]{figura48.pdf}
+\caption[Comparison of variable selection results of sNPLS method and VIP scores method]{Comparison of variable selection results of sNPLS method and VIP scores method for the $N$-PLS model of the toxicity data set. Variables selected by sNPLS are depicted as a blue point at the same height as the VIP score value for that variable and non-selected variables are depicted as a blue point at zero. Ideally, VIP score peaks and blue points should match.}
+\label{figura48}
+\end{figure}
+
+Although the agreement is not perfect, most blue points in \autoref{figura48} match a peak of VIP score so, in this specific data set, both methods give comparable results.
